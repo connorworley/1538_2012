@@ -1,0 +1,55 @@
+#ifndef __SHOOTER_H__
+#define __SHOOTER_H__
+
+#include "WPILib.h"
+
+class Shooter
+{
+	private:
+		Victor* motorA;
+		Victor* motorB;
+		Encoder* encoder;
+		Solenoid* hood;
+		
+		float wantedAccel;
+		float wantedSpeed;
+		float previousWantedAccel;
+		
+		float previousError;
+		
+		float totalI;
+		bool lockI;
+		
+		float averageAccel;
+		float previousAccel;
+		
+		bool PIDEnabled;
+		int counter;
+		
+		bool passedLowerLimit;
+		bool passedLowerLimitLatch;
+	
+	public:
+		Shooter(int motorApwm, int motorBpwm, int encoderAchan, int encoderBchan);
+		void SetAccel(float accel);
+		void Handle();
+		void SetSpeed(const float speed);
+		void SetRaw(float value);
+		float GetCurrentWantedSpeed();
+		double GetCurrentSpeed();
+		
+		bool AtGoalSpeed();
+		
+		bool GetHoodState();
+		
+		void ExtendHood();
+		void RetractHood();
+		
+		bool PIDStatus();
+		void PIDOverride();
+		
+		void Reset();
+		
+		~Shooter();
+};
+#endif

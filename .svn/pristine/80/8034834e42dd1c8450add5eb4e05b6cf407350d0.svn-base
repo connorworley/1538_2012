@@ -1,0 +1,25 @@
+#include "Roller.h"
+
+Roller::Roller(int TopMotor, int BottomMotor)
+{
+	this->motorTop = new Relay(TopMotor, Relay::kBothDirections);
+	this->motorBot = new Relay(BottomMotor, Relay::kBothDirections);
+}
+
+void Roller::Handle()
+{
+	this->motorTop->Set(wantedTopMotor);
+	this->motorBot->Set(wantedBotMotor);
+}
+
+Roller::~Roller()
+{
+	delete this->motorTop;
+	delete this->motorBot;
+}
+
+void Roller::Set(Relay::Value val)
+{
+	this->wantedTopMotor = val;
+	this->wantedBotMotor = val;
+}

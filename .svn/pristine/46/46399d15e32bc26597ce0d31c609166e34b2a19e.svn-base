@@ -1,0 +1,456 @@
+//=============================================================================
+// File: RAWCRobot.cpp
+//
+// COPYRIGHT 2011 Robotics Alliance of the West Coast(RAWC)
+// All rights reserved.  RAWC proprietary and confidential.
+//             
+// The party receiving this software directly from RAWC (the "Recipient")
+// may use this software and make copies thereof as reasonably necessary solely
+// for the purposes set forth in the agreement between the Recipient and
+// RAWC(the "Agreement").  The software may be used in source code form
+// solely by the Recipient's employees/volunteers.  The Recipient shall have 
+// no right to sublicense, assign, transfer or otherwise provide the source
+// code to any third party. Subject to the terms and conditions set forth in
+// the Agreement, this software, in binary form only, may be distributed by
+// the Recipient to its users. RAWC retains all ownership rights in and to
+// the software.
+//
+// This notice shall supercede any other notices contained within the software.
+//=============================================================================
+#include "RAWCRobot.h"
+#include <math.h>
+#include "RAWCConstants.h"
+RAWCRobot* RAWCRobot::singletonInstance = NULL;
+#include "CounterBase.h"
+#include "RAWCLib.h"
+
+#define DRIVECODELCDDEBUGER 1
+
+using namespace RAWCLib;
+
+/// Creates (if needed) and returns a singleton instance of the RAWCRobot
+RAWCRobot * RAWCRobot::getInstance()
+{
+	// If we have not created a robot yet, do so.
+	// If we have created a robot, skip this
+	if (singletonInstance == NULL)
+	{
+		singletonInstance = new RAWCRobot();
+	}
+	return singletonInstance;
+}
+
+/// Constructor for RAWCRobot
+RAWCRobot::RAWCRobot()
+{
+	camera = &AxisCamera::GetInstance("10.15.38.11");
+	camera->WriteResolution(AxisCamera::kResolution_320x240);
+	camera->WriteCompression(20);
+	camera->WriteBrightness(41);
+	camera->WriteColorLevel(77);
+	camera->WriteExposurePriority(32);
+	
+	camera->WriteMaxFPS(15);
+	
+	threshold = new Threshold(136, 255, 201, 255, 175, 255);
+	this->printCount = 0;
+
+	// Set up drive motors
+	rightDriveA = new Victor(RIGHT_DRIVE_PWM_A);
+	rightDriveB = new Victor(RIGHT_DRIVE_PWM_B);
+	rightDriveC = new Victor(RIGHT_DRIVE_PWM_C);
+	leftDriveA = new Victor(LEFT_DRIVE_PWM_A);
+	leftDriveB = new Victor(LEFT_DRIVE_PWM_B);
+	leftDriveC = new Victor(LEFT_DRIVE_PWM_C);
+
+	//Solenoids
+	shifterA = new Solenoid(SHIFTER_SOLENOID_CHAN);
+	funnel = new Solenoid(FUNNEL_SOLENOID_CHAN);
+	rampManip = new Solenoid(RAMP_SOLENOID_CHAN);
+
+	compressorSignal = new DigitalInput(COMPRESSOR_SWITCH);
+	compressorRelay = new Relay(COMPRESSOR_RELAY, Relay::kForwardOnly);
+
+	// Set up encoders
+	leftDriveEncoder = new Encoder(LEFT_ENCODER_A_CHAN, LEFT_ENCODER_B_CHAN,
+			true, CounterBase::k1X);
+	rightDriveEncoder = new Encoder(RIGHT_ENCODER_A_CHAN, RIGHT_ENCODER_B_CHAN);
+	leftDriveEncoder->SetDistancePerPulse(0.1007081038552321);
+	leftDriveEncoder->Start();
+	rightDriveEncoder->Start();
+	leftDriveEncoder->Reset();
+
+	//arm = new Arm(ARM_POT_CHAN, ARM_PWM);
+	shooter = new Shooter(SHOOTER_PWM_A, SHOOTER_PWM_B, SHOOTER_ENCODER_A_CHAN,
+			SHOOTER_ENCODER_B_CHAN);
+
+	intake = new Roller(INTAKE_RELAY_A, INTAKE_RELAY_B);
+	chute = new Roller(CHUTE_RELAY_A, CHUTE_RELAY_B);
+
+	gyro = new Gyro(GYRO_IN_CHAN);
+	gyro->SetSensitivity(0.0005); //Kiets
+	gyro->Reset();
+
+	velTimer = new Timer();
+	velTimer->Start();
+
+	//pitchGyro = new Gyro(PITCH_GYRO_IN_CHAN);
+	//pitchGyro->SetSensitivity(0.004);
+
+	//pitchGyro->SetSensitivity(0.0052083333333333);
+
+	//js = new Joystick(1);
+	velocity = 0;
+	previous_encoder = 0;
+
+	shifterCounts = 0;
+	currentShiftState = SHIFTER_STATE_HIGH;
+
+	wantToDeployArm = false;
+	wantToHang = false;
+	wantToSelfRight = false;
+	wantToResetHang = false;
+	ptoJimmyCounts = 0;
+
+	wantedUpperStage = 0;
+	wantedLowerStage = 0;
+
+	wantedLeftDrive = 0;
+	wantedRightDrive = 0;
+
+	previousAngle = 0.0;
+
+	reset = false;
+
+	wantToFixArm = false;
+
+	// Initially, we are in drive mode
+	setMode(DRIVE_MODE);
+}
+
+/// Used to handle the recurring logic funtions inside the robot.
+/// Please call this once per update cycle.
+void RAWCRobot::handle()
+{
+	printCount++;
+
+	// Default drive
+	float tmpLeftMotor = wantedLeftDrive;
+	float tmpRightMotor = wantedRightDrive;
+
+	ShifterPositions tmpShiftPos = wantedShifterPosition;
+	shift(tmpShiftPos);
+
+	setLeftMotors(tmpLeftMotor);
+	setRightMotors(tmpRightMotor);
+
+	// first off, take care of this stuff
+	compressorHandle();
+	shooter->Handle();
+	intake->Handle();
+	chute->Handle();
+
+	velocity = (this->leftDriveEncoder->GetRaw() - previous_encoder);
+
+	if (velocity < 0)
+		velocity = -velocity;
+
+	velocity /= this->velTimer->Get();
+	velocity /= 1000;
+	this->velTimer->Reset();
+	previous_encoder = this->leftDriveEncoder->GetRaw();
+
+	if (printCount % 10 == 0)
+	{
+		//printf("Vel: %d, Gyro: %f\r\n", this->leftDriveEncoder->GetRaw(), gyro->GetAngle());
+	}
+
+}
+
+void RAWCRobot::cameraPID(float y)
+{
+	if (camera->IsFreshImage())
+	{
+		ParticleFilterCriteria2 criteria[] =
+		{
+		{ IMAQ_MT_BOUNDING_RECT_WIDTH, 30, 400, false, false },
+		{ IMAQ_MT_BOUNDING_RECT_HEIGHT, 40, 400, false, false } };
+		ColorImage *image = camera->GetImage();
+		//image->Write("img.jpg");
+		
+		if(image)
+		{
+			BinaryImage *thresholdImage = image->ThresholdRGB(*threshold); // get just the red target pixels
+			BinaryImage *bigObjectsImage = thresholdImage->RemoveSmallObjects(false, 1); // remove small objects (noise)
+			BinaryImage *convexHullImage = bigObjectsImage->ConvexHull(false); // fill in partial and full rectangles
+			BinaryImage *filteredImage = convexHullImage->ParticleFilter(criteria,
+					2); // find the rectangles
+			vector<ParticleAnalysisReport> *reports = filteredImage->GetOrderedParticleAnalysisReports(); // get the results
+	
+			double ySmallest = 1.0;
+			bool foundTwoTargets = false;
+			
+			deque<ParticleAnalysisReport> sortedReports;
+			for (unsigned i = 0; i < reports->size(); i++)
+			{
+				ParticleAnalysisReport *r = &(reports->at(i));
+				if(r->center_mass_y_normalized < ySmallest)
+				{
+					ySmallest = r->center_mass_y_normalized;
+					sortedReports.push_front(*r);
+				}
+				
+				printf("particle: %d  center_mass_x: %d, center_mass_y: %d, %f, %f\n", i, r->center_mass_x, r->center_mass_y, r->center_mass_x_normalized, r->center_mass_y_normalized);
+			}
+			
+			
+			double xWanted = 0;
+			for(unsigned int i = 1; i < sortedReports.size(); i++)
+			{
+				if(sortedReports[i].center_mass_y_normalized > sortedReports[i-1].center_mass_y_normalized + 0.25 &&
+				   sortedReports[i].center_mass_y_normalized < sortedReports[i-1].center_mass_y_normalized - 0.25)
+				{
+					xWanted = (sortedReports[i].center_mass_x_normalized + sortedReports[i-1].center_mass_x_normalized)/2.0;
+					foundTwoTargets = true;
+					break;
+				}
+			}
+
+			if(foundTwoTargets)
+			{
+				double PID_P = 0 - (xWanted);
+				
+				PID_P = RAWCLib::LimitMix(PID_P*2);
+				this->driveSpeedTurn(y, -PID_P, true);
+				printf("Using two targets\n");
+				filteredImage->Write("img.jpg");
+			}
+			else
+			{
+				double PID_P = 0 - sortedReports[sortedReports.size()-1].center_mass_y_normalized;
+				this->driveSpeedTurn(y, -PID_P, true);
+				printf("Using one targets\n");
+				filteredImage->Write("img.jpg");
+			}
+			
+			
+			// be sure to delete images after using them
+			delete reports;
+			delete filteredImage;
+			delete convexHullImage;
+			delete bigObjectsImage;
+			delete thresholdImage;
+			delete image;
+		}
+		else
+		{
+			printf("Unable to get image\r\n");
+		}
+	}
+	else
+	{
+		printf("Unable to get fresh image\r\n");
+	}
+}
+
+/// Allows skid steer robot to be driven using tank drive style inputs
+/// @param leftDriveValue
+/// @param rightDriveValue
+///
+void RAWCRobot::driveLeftRight(float leftDriveValue, float rightDriveValue)
+{
+	wantedLeftDrive = leftDriveValue;
+	wantedRightDrive = rightDriveValue;
+}
+
+void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
+{
+	//Linear degredation of steeering based off of velocity
+	//	velocity *= 0.003;
+	float temp_vel = speed;
+	float sensitivity = 0;
+	float unscaled_turn = 0;
+
+	if (temp_vel < 0)
+		temp_vel = -temp_vel;
+
+	//printf("Velocity: %f, stick: %f\r\n", velocity, temp_vel);
+	if (turn > 0.05 && turn < -0.05 || (speed == 0 && !quickTurn))
+		turn = 0;
+
+	unscaled_turn = turn;
+	//turn = turn * (temp_vel - 0.75);
+
+
+	if (quickTurn)
+		sensitivity = 2;
+	else
+		sensitivity = 0.5;
+
+	turn *= sensitivity;
+	turn = -turn;
+
+	//turn = steeringAngle;
+
+	float left_power = LimitMix(speed + turn);
+	float right_power = LimitMix(speed - turn);
+
+	float right_power_real = VictorLinearize(right_power);
+	float left_power_real = VictorLinearize(left_power);
+
+	driveLeftRight(left_power_real, right_power_real);
+}
+
+/// Allows robot to spin in place
+/// @param turnRate
+///
+void RAWCRobot::quickTurn(float turnRate)
+{
+	//when provided with + turn, quick turn right
+
+	float left = -1 * turnRate;
+	float right = turnRate;
+
+	driveLeftRight(left, right);
+}
+
+/// Handles the autmatic turn on/off of the compressor
+void RAWCRobot::compressorHandle()
+{
+	if (!compressorSignal->Get())
+	{
+		compressorRelay->Set(Relay::kOn);
+	}
+	else
+		compressorRelay->Set(Relay::kOff);
+}
+
+/// Returns the value of the drive's left side encoder
+Encoder * RAWCRobot::getLeftEncoder()
+{
+	return leftDriveEncoder;
+}
+
+/// Returns the value of the drive's right side encoder
+Encoder * RAWCRobot::getRightEncoder()
+{
+	return rightDriveEncoder;
+}
+
+Gyro * RAWCRobot::getGyro()
+{
+	return gyro;
+}
+
+Shooter* RAWCRobot::getShooter()
+{
+	return shooter;
+}
+
+Roller* RAWCRobot::getIntake()
+{
+	return intake;
+}
+
+Roller* RAWCRobot::getChute()
+{
+	return chute;
+}
+
+Solenoid* RAWCRobot::getFunnel()
+{
+	return funnel;
+}
+
+Solenoid* RAWCRobot::getRampManip()
+{
+	return rampManip;
+}
+
+/// Shifts drive gears. 
+/// @param shifterPosition
+void RAWCRobot::shift(ShifterPositions shifterPosition)
+{
+	bool solA = false, solB = false;
+	ShifterStates nextShiftState = currentShiftState;
+	// It takes lots of logic to shift this year
+	switch (currentShiftState)
+	{
+	case SHIFTER_STATE_HIGH:
+		solA = false;
+		solB = false;
+		shifterCounts = 0;
+		if (shifterPosition == SHIFTER_POS_LOW)
+			nextShiftState = SHIFTER_STATE_LOW;
+		break;
+
+	case SHIFTER_STATE_LOW:
+		solA = true;
+		shifterCounts = 0;
+		if (shifterPosition == SHIFTER_POS_HIGH)
+			nextShiftState = SHIFTER_STATE_HIGH;
+		break;
+	default:
+		nextShiftState = SHIFTER_STATE_HIGH;
+		break;
+	}
+
+	shifterA->Set(solA);
+
+	if (currentShiftState != nextShiftState)
+	{
+		leftDriveA->Set(0);
+		leftDriveB->Set(0);
+		leftDriveC->Set(0);
+		rightDriveA->Set(0);
+		rightDriveB->Set(0);
+		rightDriveC->Set(0);
+		Wait(0.125);
+	}
+
+	currentShiftState = nextShiftState;
+}
+
+void RAWCRobot::askForShift(ShifterPositions shifterPosition)
+{
+	wantedShifterPosition = shifterPosition;
+}
+
+/// Sets the robot mode
+void RAWCRobot::setMode(RobotModes newMode)
+{
+	mode = newMode;
+}
+
+/// sets the left side motors
+void RAWCRobot::setLeftMotors(float val)
+{
+	val = -1.0 * val;
+
+	if (val > 1.0)
+		val = 1.00;
+	if (val < -1.0)
+		val = -1.0;
+
+	leftDriveA->Set(-val);
+	leftDriveB->Set(-val);
+	leftDriveC->Set(-val);
+}
+
+/// sets the left side motors
+void RAWCRobot::setRightMotors(float val)
+{
+	if (val > 1.0)
+		val = 1.00;
+	if (val < -1.0)
+		val = -1.0;
+
+	rightDriveA->Set(-val);
+	rightDriveB->Set(-val);
+	rightDriveC->Set(-val);
+}
+
+bool RAWCRobot::inHighGear()
+{
+	return (currentShiftState == SHIFTER_STATE_HIGH);
+}

@@ -1,0 +1,201 @@
+#include "AutoModeController.h"
+#include "../RAWCRobot.h"
+#include "../RAWCConstants.h"
+#include "../accelFilter.h"
+#include <math.h>
+
+AutoModeController* AutoModeController::singletonInstance = NULL;
+
+/// Creates (if needed) and returns a sidngleton Control Board instance
+AutoModeController* AutoModeController::getInstance()
+{
+	if( singletonInstance == NULL)
+		singletonInstance = new AutoModeController(); 
+	return singletonInstance;
+}
+
+AutoModeController::AutoModeController()
+:
+	previousError(0)
+{
+	bot = RAWCRobot::getInstance();
+	timer = new Timer();
+	curCmd = cmdNULL;
+	
+	extendArm = false;
+	
+	timer->Start();
+	
+	reset();
+}
+
+void AutoModeController::addCommand(RobotCommandNames_e cmd, 
+					cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4)
+{
+	// Make the new command
+	RobotCommand newCmd;
+	newCmd.cmd = cmd;
+	newCmd.encoderCount = arg1;
+	newCmd.heading = arg2;
+	newCmd.armPos = arg3;
+	newCmd.timeout = arg4;
+	
+	
+	// add it to the end of the list
+	cmdList.push_back(newCmd);
+}
+
+void AutoModeController::reset()
+{
+	//RAWCConstants * rc = RAWCConstants::getInstance();
+	bot->getGyro()->Reset();
+	cmdList.clear();
+	curCmd = cmdNULL;
+	bot->askForShift(RAWCRobot::SHIFTER_POS_HIGH);
+}
+
+bool AutoModeController::handle()
+{
+	bool result = false;
+	bool thisIsNull = false;
+	
+	// Run the command
+	switch(curCmd.cmd)
+	{
+		/*case CMD_DRIVE:
+			result = driveDistanceWithHeading(curCmd.encoderCount, curCmd.heading);
+			bot->getArm()->SetPosition(curCmd.armPos);
+			if(extendArm)
+				bot->getArm()->Extend();
+			break;
+		case CMD_DRIVE_DIST:
+			result = driveDistancePWithHeading(curCmd.encoderCount, curCmd.heading);
+			bot->getArm()->SetPosition(curCmd.armPos);
+			if(extendArm)
+				bot->getArm()->Extend();
+			break;
+		case CMD_TURN:
+			result = turnHeading(curCmd.heading);
+			bot->getArm()->SetPosition(curCmd.armPos);
+			if(extendArm)
+				bot->getArm()->Extend();
+			break;
+		case CMD_INTAKE_TUBE:
+			result = true;
+			bot->getRoller()->Activate();
+			if(extendArm)
+				bot->getArm()->Extend();
+		case CMD_RELEASE_TUBE:
+			result = true;
+			bot->getRoller()->Activate();
+			if(extendArm)
+				bot->getArm()->Extend();
+		case CMD_TELESCOPE:
+			result = true;
+			extendArm = true;
+		case CMD_NULL:
+			thisIsNull = true;
+			doNothing();
+			
+			result = true;
+			break;*/
+		
+		default :
+			doNothing();
+			result = true;
+			break;
+	}
+	
+	// Check if this command is done
+	if(result == true || thisIsNull || timer->Get() > curCmd.timeout){
+		// This command is done, go get the next one
+		if(cmdList.size() > 0 )
+		{
+			curCmd = cmdList.front();
+			cmdList.pop_front();
+			timer->Reset();
+		}
+		else curCmd = cmdNULL;
+	}
+	return false;
+}
+
+// Drive Functions
+void AutoModeController::doNothing()
+{
+	bot->driveLeftRight(0,0);
+	//bot->getArm()->SetMotor(0);
+	//bot->getArm()->
+}
+
+bool AutoModeController::turnHeading(cmdArg heading)
+{
+	const float pGain = 0.9;
+	
+	float currentHeading = bot->getGyro()->GetAngle();
+	float turn = heading - currentHeading;
+	turn /= 100;
+	
+	bot->getLeftEncoder()->Reset();
+	
+	previousError = turn;
+	
+	//printf("%f\r\n", turn);
+	
+	float output = (LimitMix(turn) * pGain) + (LimitMix(previousError - turn) * 0.3);
+	bot->driveLeftRight(output, -output);
+	
+	if((currentHeading < heading + 1 && currentHeading > heading - 1))
+	{
+		printf("Done with distance\r\n");
+		return false;
+	}	
+	else
+		return false;
+}
+
+bool AutoModeController::driveDistanceWithHeading(cmdArg distance, cmdArg heading)
+{
+	float distanceP = bot->getLeftEncoder()->GetRaw() - distance;
+	float currentDistance = bot->getLeftEncoder()->GetRaw();
+	float turn = heading - bot->getGyro()->GetAngle();
+	
+	turn /= 100;
+	distanceP *= 0.005;
+	
+	//printf("%f\r\n", currentDistance);
+		
+	bot->driveSpeedTurn(LimitMix(distanceP) * 0.90, LimitMix(-turn)*1.3, true);
+	if(currentDistance > distance)
+	{
+		return true;
+	}	
+	else
+		return false;
+}
+
+bool AutoModeController::driveDistancePWithHeading(cmdArg distance, cmdArg heading)
+{
+	float distanceP = bot->getLeftEncoder()->GetRaw() - distance;
+	float currentDistance = bot->getLeftEncoder()->GetRaw();
+	float currentHeading = bot->getGyro()->GetAngle();
+	float turn = heading - bot->getGyro()->GetAngle();
+		
+	distanceP *= 0.005;
+	turn /= 100;
+	
+	//printf("%f\r\n", currentDistance);
+		
+	bot->driveSpeedTurn(LimitMix(distanceP) * 0.9, LimitMix(-turn)*1.3, true);
+	if((currentDistance < distance + 40 && currentDistance > distance - 40) &&
+	   (currentHeading < heading + 1 && currentHeading > heading -1))
+	{
+		printf("Done with distance\r\n");
+		return true;
+	}	
+	else
+		return false;
+}
+
+
+

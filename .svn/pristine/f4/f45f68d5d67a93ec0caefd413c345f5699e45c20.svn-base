@@ -1,0 +1,25 @@
+#ifndef __ROLLER_H__
+#define __ROLLER_H__
+
+#include "WPILib.h"
+#include "../Declarations.h"
+
+class Roller
+{
+private:
+	Relay* motorTop;
+	Relay* motorBot;
+	
+	Relay::Value wantedTopMotor;
+	Relay::Value wantedBotMotor;
+	
+public:
+	
+	Roller(int TopMotor, int BottomMotor);
+	~Roller();
+	void Handle();
+	void Set(Relay::Value val);
+	
+};
+
+#endif

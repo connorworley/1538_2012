@@ -1,0 +1,155 @@
+#ifndef _RAWC_ROBOT_H
+#define _RAWC_ROBOT_H
+//=============================================================================
+// File: RAWCRobot.h
+//
+// COPYRIGHT 2011 Robotics Alliance of the West Coast(RAWC)
+// All rights reserved.  RAWC proprietary and confidential.
+//             
+// The party receiving this software directly from RAWC (the "Recipient")
+// may use this software and make copies thereof as reasonably necessary solely
+// for the purposes set forth in the agreement between the Recipient and
+// RAWC(the "Agreement").  The software may be used in source code form
+// solely by the Recipient's employees/volunteers.  The Recipient shall have 
+// no right to sublicense, assign, transfer or otherwise provide the source
+// code to any third party. Subject to the terms and conditions set forth in
+// the Agreement, this software, in binary form only, may be distributed by
+// the Recipient to its users. RAWC retains all ownership rights in and to
+// the software.
+//
+// This notice shall supercede any other notices contained within the software.
+//=============================================================================
+#include "WPILib.h"
+#include "Vision/RGBImage.h"
+#include "Vision/BinaryImage.h"
+
+#include "RAWCLib.h"
+#include "subsystems/Shooter.h"
+#include "subsystems/Roller.h"
+
+/// This class provides core robot functionality and encapsulates 
+/// motors, sensors, relays, etc.
+///
+class RAWCRobot{
+	public: 
+	static RAWCRobot * singletonInstance;
+	
+	enum ShifterPositions{
+		SHIFTER_POS_LOW = 0,
+		SHIFTER_POS_HIGH
+	};
+	
+	enum RobotModes{
+		DRIVE_MODE
+	};
+	
+	enum ShifterStates{
+		SHIFTER_STATE_HIGH,
+		SHIFTER_STATE_LOW
+	};
+	
+	static RAWCRobot* getInstance();
+	
+	void driveSpeedTurn(float speed, float turn, bool quickTurn);
+	void driveLeftRight(float leftDriveValue, float rightDriveValue);
+	void quickTurn(float turn);
+	void cameraPID(float y);
+	void compressorHandle();
+	Encoder * getLeftEncoder();
+	Encoder * getRightEncoder();
+	
+	Gyro * getGyro();
+	Joystick * js;
+	//Arm* getArm();
+	Shooter* getShooter();
+	Roller* getIntake();
+	Roller* getChute();
+	Solenoid* getFunnel();
+	Solenoid* getRampManip();
+	
+	Timer* velTimer;
+	
+	void handle();
+
+	
+	void askForShift(ShifterPositions shifterPosition);
+	
+	bool inHighGear();
+
+	
+private:
+	float velocity;
+	double previous_encoder;
+	
+	void shift(ShifterPositions shifterPosition);
+	void setMode(RobotModes newMode);
+	
+	// Drive Motors
+	Victor *rightDriveA;
+	Victor *rightDriveB;
+	Victor *rightDriveC;
+	Victor *leftDriveA;
+	Victor *leftDriveB;
+	Victor *leftDriveC;
+	
+	// Drive shifting pistons
+	Solenoid *shifterA;
+	Solenoid *funnel;
+	Solenoid *rampManip;
+
+	// Compressor
+	DigitalInput *compressorSignal;
+
+	Relay *compressorRelay;
+	//Arm* arm;
+	Shooter* shooter;
+	Roller* intake;
+	Roller* chute;
+		
+	//Sensors
+	Gyro * gyro;
+	Encoder *leftDriveEncoder;
+	Encoder *rightDriveEncoder;
+
+	AxisCamera *camera;
+	
+	Threshold *threshold;
+	RobotModes mode;
+	
+	ShifterPositions wantedShifterPosition;
+
+	float wantedUpperStage;
+	float wantedLowerStage;
+	
+	float wantedLeftDrive;
+	float wantedRightDrive;
+	
+	float previousAngle;
+	
+	bool wantToDeployArm;
+	bool wantToHang;
+	bool wantToSelfRight ;
+	bool wantToResetHang;
+	bool wantToFixArm;
+	
+	int ptoJimmyCounts;
+	
+	int printCount;
+	
+	int shifterCounts;
+	ShifterStates currentShiftState;
+	
+	
+	bool reset;
+	
+	
+	RAWCRobot();
+	
+	void setLeftMotors(float val);
+	void setRightMotors(float val);
+		
+
+	
+};
+
+#endif
