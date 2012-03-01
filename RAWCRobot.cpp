@@ -52,7 +52,7 @@ RAWCRobot::RAWCRobot()
 	
 
 	camera->WriteExposurePriority(47);
-	camera->WriteMaxFPS(15);
+	camera->WriteMaxFPS(10);
 	
 	threshold = new Threshold(90, 155, 147, 255, 55, 201);
 	this->printCount = 0;
@@ -186,7 +186,7 @@ void RAWCRobot::cameraPID(float y)
 			//BinaryImage *thresholdImage = image->ThresholdRGB(*threshold); // get just the red target pixels
 			BinaryImage *bigObjectsImage = thresholdImage->RemoveSmallObjects(false, 1); // remove small objects (noise)
 			BinaryImage *convexHullImage = bigObjectsImage->ConvexHull(false); // fill in partial and full rectangles
-			//BinaryImage *filteredImage = convexHullImage->ParticleFilter(criteria, 2); // find the rectangles
+			BinaryImage *filteredImage = convexHullImage->ParticleFilter(criteria, 2); // find the rectangles
 			vector<ParticleAnalysisReport> *sortedReports = convexHullImage->GetOrderedParticleAnalysisReports(); // get the results
 			
 			bool foundTwoTargets = false;
@@ -218,11 +218,12 @@ void RAWCRobot::cameraPID(float y)
 			{
 				double PID_P = 0 - (xWanted);
 				
-				PID_P = RAWCLib::LimitMix(PID_P*2);
+				PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
+				
 				this->driveSpeedTurn(y, -PID_P, true);
 				printf("Using two targets\n");
-				image->Write("unfiltered.jpg");
-				convexHullImage->Write("img.jpg");
+				//image->Write("unfiltered.jpg");
+				//convexHullImage->Write("img.jpg");
 			}
 			else
 			{
@@ -232,10 +233,11 @@ void RAWCRobot::cameraPID(float y)
 					ParticleAnalysisReport *r0 = &(sortedReports->at(sortedReports->size() - 1));
 					PID_P = 0 - r0->center_mass_x_normalized;
 				}
+				PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
 				this->driveSpeedTurn(y, -PID_P, true);
 				printf("Using one targets\n");
-				image->Write("unfiltered.jpg");
-				convexHullImage->Write("img.jpg");
+				//image->Write("unfiltered.jpg");
+				//convexHullImage->Write("img.jpg");
 			}
 			
 			
@@ -246,6 +248,7 @@ void RAWCRobot::cameraPID(float y)
 			delete bigObjectsImage;
 			delete thresholdImage;
 			delete image;
+			Wait(0.001);
 		}
 		else
 		{

@@ -91,6 +91,26 @@ void RAWCLib::PrintToLCD::finalizeUpdate(){
 		
 }
 
+float RAWCLib::LimitMix(float value, float maxValue)
+{
+	float limited_value = 0;
+	
+	if(value < -maxValue)
+	{
+		limited_value = -maxValue;
+	}
+	else if(value > maxValue)
+	{
+		limited_value = maxValue;
+	}
+	else
+	{
+		limited_value = value;
+	}
+	
+	return limited_value;
+}
+
 float RAWCLib::LimitMix(float value)
 {
 	float limited_value = 0;

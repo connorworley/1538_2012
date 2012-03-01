@@ -30,6 +30,7 @@
 namespace RAWCLib
 {
 	float VictorLinearize(double goal_speed);
+	float LimitMix(float value, float maxValue);
 	float LimitMix(float value);
 	float AnalogInScale(float oldx, double center);
 	
