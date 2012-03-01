@@ -242,8 +242,11 @@ void RAWCRobot::cameraPID(float y)
 			
 			
 			// be sure to delete images after using them
+			
+			
 			delete sortedReports;
-			//delete filteredImage;
+			
+			delete filteredImage;
 			delete convexHullImage;
 			delete bigObjectsImage;
 			delete thresholdImage;
