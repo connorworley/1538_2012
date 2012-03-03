@@ -53,32 +53,8 @@ string AutoModeSelector::description()
 	
 	switch (index)
 	{
-	case amLeft1:
-		sprintf(str,"Left Lane - 1 Tube    ");
-		s.assign(str);
-		break;
-	case amLeft2:
-		sprintf(str,"Left Lane - 2 Tube    ");
-		s.assign(str);
-		break;
-	case amMiddle1:
-		sprintf(str,"Middle Lane - 1 Tube  ");
-		s.assign(str);
-		break;
-	case amMiddle2:
-		sprintf(str,"Middle Lane - 2 Tube  ");
-		s.assign(str);
-		break;
-	case amMiddle3:
-		sprintf(str,"Middle Lane - 3 Tube  ");
-		s.assign(str);
-		break;
-	case amRight1:
-		sprintf(str,"Right Lane - 1 Tube   ");
-		s.assign(str);
-		break;
-	case amRight2:
-		sprintf(str,"Right Lane - 2 Tube   ");
+	case amAimAndFire:
+		sprintf(str,"Auto-aim and fire     ");
 		s.assign(str);
 		break;
 	case amDoNothing:
@@ -102,37 +78,9 @@ void AutoModeSelector::writeToAutoModeController(AutoModeController * autoContro
 	switch(index)
 	{
 	
-	//0.0429296875
-	case amLeft1:
-		/*
-		autoController->addCommand(CMD_DRIVE_DIST, 1000, 0, ARM_TOP,5);
-		autoController->addCommand(CMD_TELESCOPE, 0, 0, ARM_TOP, 0.1);
-		autoController->addCommand(CMD_DRIVE_DIST, 5000, 0, ARM_TOP,5);
-		autoController->addCommand(CMD_RELEASE_TUBE, 0, 0, ARM_TOP, 0.1);
-		autoController->addCommand(CMD_DRIVE_DIST, 2000, 0, ARM_TOP, 5);
-		autoController->addCommand(CMD_DRIVE_DIST, 350, 0, ARM_STOP, 5);
-		autoController->addCommand(CMD_INTAKE_TUBE, 0, 0, ARM_TOP, 0.5);
-		autoController->addCommand(CMD_TURN, 45, 0, ARM_STOP, 0.45);
-		autoController->addCommand(CMD_DRIVE_DIST, 4000, 45, ARM_STOP, 1);
-		autoController->addCommand(CMD_TURN, 0, 0, ARM_STOP, 0.45);
-		autoController->addCommand(CMD_DRIVE_DIST, 4900, 0, ARM_TOP, 5);
-		autoController->addCommand(CMD_RELEASE_TUBE, 0, 0, ARM_TOP, 0.1);
-		autoController->addCommand(CMD_DRIVE_DIST, 2000, 0, ARM_STOP, 5);
-		autoController->addCommand(CMD_RELEASE_TUBE, 0, 0, ARM_TOP, 0.1);
-		autoController->addCommand(CMD_DRIVE_DIST, 1500, 0, ARM_STOP, 5);
-		*/
-		break;
-	case amLeft2:
-		/*
-		autoController->addCommand(CMD_DRIVE_DIST, 5000, 0, 5);
-		autoController->addCommand(CMD_DRIVE_DIST, 350, 0, 5);
-		autoController->addCommand(CMD_TURN, -45, 0, 0.45);
-		autoController->addCommand(CMD_DRIVE_DIST, 870, -45, 1);
-		autoController->addCommand(CMD_TURN, 0, 0, 0.45);
-		autoController->addCommand(CMD_DRIVE_DIST, 5150, 0, 5);
-		autoController->addCommand(CMD_DRIVE_DIST, 2500, 0, 5);
-		*/
-		printf("Wrote Left1\r\n");
+	case amAimAndFire:
+		autoController->addCommand(CMD_AUTOAIM, 0, 0, 4800, 3);
+		autoController->addCommand(CMD_CHUTE, 0, 0, 4800, 1);
 		break;
 
 	case amDoNothing:

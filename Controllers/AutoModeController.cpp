@@ -57,7 +57,7 @@ void AutoModeController::addCommand(RobotCommandNames_e cmd,
 	newCmd.cmd = cmd;
 	newCmd.encoderCount = arg1;
 	newCmd.heading = arg2;
-	newCmd.armPos = arg3;
+	newCmd.shooter = arg3;
 	newCmd.timeout = arg4;
 	
 	
@@ -82,43 +82,48 @@ bool AutoModeController::handle()
 	// Run the command
 	switch(curCmd.cmd)
 	{
-		/*case CMD_DRIVE:
+		case CMD_AUTOAIM:
+			result = bot->cameraPID(0);
+			bot->getShooter()->SetSpeed(curCmd.shooter);
+			break;
+		case CMD_DRIVE:
 			result = driveDistanceWithHeading(curCmd.encoderCount, curCmd.heading);
-			bot->getArm()->SetPosition(curCmd.armPos);
-			if(extendArm)
-				bot->getArm()->Extend();
+			bot->getShooter()->SetSpeed(curCmd.shooter);
 			break;
 		case CMD_DRIVE_DIST:
 			result = driveDistancePWithHeading(curCmd.encoderCount, curCmd.heading);
-			bot->getArm()->SetPosition(curCmd.armPos);
-			if(extendArm)
-				bot->getArm()->Extend();
+			bot->getShooter()->SetSpeed(curCmd.shooter);
 			break;
 		case CMD_TURN:
 			result = turnHeading(curCmd.heading);
-			bot->getArm()->SetPosition(curCmd.armPos);
-			if(extendArm)
-				bot->getArm()->Extend();
+			bot->getShooter()->SetSpeed(curCmd.shooter);
 			break;
-		case CMD_INTAKE_TUBE:
-			result = true;
-			bot->getRoller()->Activate();
-			if(extendArm)
-				bot->getArm()->Extend();
-		case CMD_RELEASE_TUBE:
-			result = true;
-			bot->getRoller()->Activate();
-			if(extendArm)
-				bot->getArm()->Extend();
-		case CMD_TELESCOPE:
-			result = true;
-			extendArm = true;
+		case CMD_INTAKE:
+			result = false;
+			Relay::Value intakeState = bot->getIntake()->GetTop();
+			if(intakeState == Relay::kForward)
+				bot->getIntake()->Set(Relay::kOff);
+			else
+				bot->getIntake()->Set(Relay::kForward);
+			
+			bot->getShooter()->SetSpeed(curCmd.shooter);
+			break;
+		case CMD_CHUTE:
+			result = false;
+			Relay::Value chuteState = bot->getChute()->GetTop();
+			if(chuteState == Relay::kForward)
+				bot->getChute()->Set(Relay::kOff);
+			else
+				bot->getChute()->Set(Relay::kForward);
+			
+			bot->getShooter()->SetSpeed(curCmd.shooter);
+			break;
 		case CMD_NULL:
 			thisIsNull = true;
 			doNothing();
 			
 			result = true;
-			break;*/
+			break;
 		
 		default :
 			doNothing();

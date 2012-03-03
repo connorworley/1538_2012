@@ -39,6 +39,8 @@ public:
 	~Roller();
 	void Handle();
 	void Set(Relay::Value val);
+	Relay::Value GetTop();
+	Relay::Value GetBottom();
 	
 };
 

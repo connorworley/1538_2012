@@ -69,6 +69,7 @@ RAWCRobot::RAWCRobot()
 	shifterA = new Solenoid(SHIFTER_SOLENOID_CHAN);
 	funnel = new Solenoid(FUNNEL_SOLENOID_CHAN);
 	rampManip = new Solenoid(RAMP_SOLENOID_CHAN);
+	
 
 	compressorSignal = new DigitalInput(COMPRESSOR_SWITCH);
 	compressorRelay = new Relay(COMPRESSOR_RELAY, Relay::kForwardOnly);
@@ -150,7 +151,10 @@ void RAWCRobot::handle()
 	compressorHandle();
 	shooter->Handle();
 	intake->Handle();
-	chute->Handle();
+	if(!shooter->AtGoalSpeed() && shooter->ballReady())
+		chute->Set(Relay::kOff);
+	else
+		chute->Handle();
 
 	velocity = (this->leftDriveEncoder->GetRaw() - previous_encoder);
 
@@ -169,7 +173,7 @@ void RAWCRobot::handle()
 
 }
 
-void RAWCRobot::cameraPID(float y)
+bool RAWCRobot::cameraPID(float y)
 {
 	if (camera->IsFreshImage())
 	{
@@ -213,10 +217,11 @@ void RAWCRobot::cameraPID(float y)
 				printf("particle: %d  center_mass_x: %d, center_mass_y: %d, %f, %f\n", i, r0->center_mass_y, r0->center_mass_y, r0->center_mass_x_normalized, r0->center_mass_y_normalized);
 			}
 
-
+			double PID_P = 0;
+			
 			if(foundTwoTargets)
 			{
-				double PID_P = 0 - (xWanted);
+				PID_P = 0 - (xWanted);
 				
 				PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
 				
@@ -227,7 +232,6 @@ void RAWCRobot::cameraPID(float y)
 			}
 			else
 			{
-				double PID_P = 0;
 				if(sortedReports->size() > 0)
 				{
 					ParticleAnalysisReport *r0 = &(sortedReports->at(sortedReports->size() - 1));
@@ -252,6 +256,14 @@ void RAWCRobot::cameraPID(float y)
 			delete thresholdImage;
 			delete image;
 			Wait(0.001);
+			if(PID_P > -0.03 && PID_P < 0.03)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		else
 		{
@@ -262,6 +274,7 @@ void RAWCRobot::cameraPID(float y)
 	{
 		printf("Unable to get fresh image\r\n");
 	}
+	return false;
 }
 
 /// Allows skid steer robot to be driven using tank drive style inputs
@@ -286,7 +299,7 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 		temp_vel = -temp_vel;
 
 	//printf("Velocity: %f, stick: %f\r\n", velocity, temp_vel);
-	if (turn > 0.05 && turn < -0.05 || (speed == 0 && !quickTurn))
+	if (turn > 0.10 && turn < -0.10 || (speed == 0 && !quickTurn))
 		turn = 0;
 
 	unscaled_turn = turn;

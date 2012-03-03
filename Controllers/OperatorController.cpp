@@ -67,7 +67,11 @@ void OperatorController::handle()
 	{
 		if(cb->getOperatorButton(4))
 		{
-			bot->getShooter()->SetSpeed(4000);
+			if(!bot->getShooter()->GetHoodState())
+				bot->getShooter()->SetSpeed(4800);
+			else
+				bot->getShooter()->SetSpeed(3000);
+			
 		} else {
 			bot->getShooter()->SetSpeed(0);
 		}
@@ -119,7 +123,7 @@ void OperatorController::handle()
 		bot->getIntake()->Set(Relay::kOff);
 	}
 	
-	if(cb->getOperatorButton(6) && bot->getShooter()->AtGoalSpeed())
+	if(cb->getOperatorButton(6))
 	{
 		bot->getChute()->Set(Relay::kForward);
 	} else if(cb->getOperatorButton(8))

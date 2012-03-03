@@ -35,12 +35,15 @@ lockI(false),
 averageAccel(0),
 previousAccel(0),
 PIDEnabled(true),
-counter(0)
+counter(0),
+PID_P(0)
 {
 	motorA = new Victor(motorApwm);
 	motorB = new Victor(motorBpwm);
 	encoder = new Encoder(encoderAchan, encoderBchan, false, Encoder::k1X);
 	hood = new Solenoid(SHOOTER_SOLENOID_CHAN);
+	
+	irSensor = new AnalogChannel(1);
 	
 	encoder->Start();
 }
@@ -55,15 +58,15 @@ void Shooter::Handle()
 	averageAccel += delta;
 	previousAccel = sensorPos;
 	
-	double PID_P = wantedSpeed - sensorPos;
+	PID_P = wantedSpeed - sensorPos;
 	double PID_D = previousError - PID_P;
 	
 	if(!lockI && PID_P > 0)
 		totalI += (PID_P > 25) ? 25 : PID_P;
 	
-	PID_P *= 0.004;
+	PID_P *= 0.008;
 	double PID_I = totalI * 0.00008;
-	PID_D *= 0.002;
+	PID_D *= 0.005;
 	
 	previousError = PID_P;
 		
@@ -87,7 +90,7 @@ void Shooter::Handle()
 			lockI = true;
 		}
 		
-		//printf("Wanted: %f, Actual: %f, Output: %f, I total: %f\n", wantedSpeed, (float)encoder->GetRate(), output, totalI);
+		printf("Wanted: %f, Actual: %f, Output: %f, I total: %f\n", wantedSpeed, (float)encoder->GetRate(), output, totalI);
 	
 		averageAccel = 0;
 	}
@@ -170,7 +173,15 @@ float Shooter::GetCurrentWantedSpeed()
 bool Shooter::AtGoalSpeed()
 {
 	//TODO: find a better way to determine
-	return true;
+	return (PID_P > -0.3 && PID_P < 0.3);
+}
+
+bool Shooter::ballReady()
+{
+	//return (irSensor->GetVoltage() > 0.0);
+	
+	printf("IR Sensor: %f\n", irSensor->GetVoltage());
+	return false;
 }
 
 Shooter::~Shooter()

@@ -55,7 +55,7 @@ class RAWCRobot
 	void driveSpeedTurn(float speed, float turn, bool quickTurn);
 	void driveLeftRight(float leftDriveValue, float rightDriveValue);
 	void quickTurn(float turn);
-	void cameraPID(float y);
+	bool cameraPID(float y);
 	void compressorHandle();
 	Encoder * getLeftEncoder();
 	Encoder * getRightEncoder();
@@ -98,6 +98,7 @@ private:
 	Solenoid *funnel;
 	Solenoid *rampManip;
 
+	
 	// Compressor
 	DigitalInput *compressorSignal;
 

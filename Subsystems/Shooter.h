@@ -30,6 +30,7 @@ class Shooter
 		Victor* motorB;
 		Encoder* encoder;
 		Solenoid* hood;
+		AnalogChannel* irSensor;
 		
 		float wantedAccel;
 		float wantedSpeed;
@@ -45,6 +46,8 @@ class Shooter
 		
 		bool PIDEnabled;
 		int counter;
+		
+		double PID_P;
 		
 		bool passedLowerLimit;
 		bool passedLowerLimitLatch;
@@ -69,6 +72,8 @@ class Shooter
 		void PIDOverride();
 		
 		void Reset();
+		
+		bool ballReady();
 		
 		~Shooter();
 };

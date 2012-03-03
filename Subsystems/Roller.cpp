@@ -43,3 +43,13 @@ void Roller::Set(Relay::Value val)
 	this->wantedTopMotor = val;
 	this->wantedBotMotor = val;
 }
+
+Relay::Value Roller::GetTop()
+{
+	return wantedTopMotor;
+}
+
+Relay::Value Roller::GetBottom()
+{
+	return wantedBotMotor;
+}

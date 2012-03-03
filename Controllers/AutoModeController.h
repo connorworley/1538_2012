@@ -32,11 +32,11 @@ typedef float cmdArg;
 typedef enum RobotCommandNames_e
 {
 	CMD_NULL = 0,
+	CMD_AUTOAIM,
 	CMD_DRIVE,
 	CMD_DRIVE_DIST,
-	CMD_RELEASE_TUBE,
-	CMD_INTAKE_TUBE,
-	CMD_TELESCOPE,
+	CMD_INTAKE,
+	CMD_CHUTE,
 	CMD_WAIT,
 	CMD_TURN
 }RobotCommandNames_e;
@@ -45,8 +45,9 @@ typedef struct RobotCommand{
 	RobotCommandNames_e cmd;
 	cmdArg encoderCount;
 	cmdArg heading;
-	cmdArg armPos;
-	cmdArg roller;
+	cmdArg shooter;
+	cmdArg intake;
+	cmdArg chute;
 	cmdArg timeout;
 }RobotCommand;
 
