@@ -124,6 +124,14 @@ bool AutoModeController::handle()
 			
 			result = true;
 			break;
+			
+		case CMD_WAIT:
+			doNothing();
+			
+			bot->getShooter()->SetSpeed(curCmd.shooter);
+			
+			result = false;
+			break;
 		
 		default :
 			doNothing();

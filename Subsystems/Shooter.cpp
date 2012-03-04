@@ -173,15 +173,25 @@ float Shooter::GetCurrentWantedSpeed()
 bool Shooter::AtGoalSpeed()
 {
 	//TODO: find a better way to determine
-	return (PID_P > -0.3 && PID_P < 0.3);
+	
+	
+	//printf("Goal Speed: %f, %f\r\n", PID_P, irSensor->GetVoltage());
+//	if(PID_P > -1.1 && PID_P < 1.1)
+//		printf("At goal speed\r\n");
+//	else
+//		printf("At goal speed\r\n");
+	
+	//printf("IR Sensor: %f\n", irSensor->GetVoltage());
+	
+	return (PID_P > -1.1 && PID_P < 1.1);
 }
 
 bool Shooter::ballReady()
 {
-	//return (irSensor->GetVoltage() > 0.0);
+	return (irSensor->GetVoltage() > 1.1);
 	
-	printf("IR Sensor: %f\n", irSensor->GetVoltage());
-	return false;
+	//printf("IR Sensor: %f\n", irSensor->GetVoltage());
+	//return false;
 }
 
 Shooter::~Shooter()

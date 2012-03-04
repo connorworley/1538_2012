@@ -151,10 +151,11 @@ void RAWCRobot::handle()
 	compressorHandle();
 	shooter->Handle();
 	intake->Handle();
-	if(!shooter->AtGoalSpeed() && shooter->ballReady())
-		chute->Set(Relay::kOff);
-	else
-		chute->Handle();
+	//shooter->ballReady();
+	//if(!shooter->AtGoalSpeed() && shooter->ballReady() || shooter->GetCurrentWantedSpeed() == 0 && shooter->ballReady())
+	//	chute->Set(Relay::kOff);
+	
+	chute->Handle();
 
 	velocity = (this->leftDriveEncoder->GetRaw() - previous_encoder);
 

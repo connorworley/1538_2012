@@ -177,8 +177,8 @@ public:
 		//sendIOPortData();
 	}
 	void AutonomousPeriodic(void) {
-		//autoController->handle();
-		//bot->handle();
+		autoController->handle();
+		bot->handle();
 		
 		//sendIOPortData();
 	}

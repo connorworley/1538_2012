@@ -79,8 +79,9 @@ void AutoModeSelector::writeToAutoModeController(AutoModeController * autoContro
 	{
 	
 	case amAimAndFire:
-		autoController->addCommand(CMD_AUTOAIM, 0, 0, 4800, 3);
-		autoController->addCommand(CMD_CHUTE, 0, 0, 4800, 1);
+		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 4800, 3);
+		autoController->addCommand(CMD_WAIT, 0, 0, 4720, 5);
+		autoController->addCommand(CMD_CHUTE, 0, 0, 4720, 3);
 		break;
 
 	case amDoNothing:
