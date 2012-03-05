@@ -37,7 +37,13 @@ class AutoModeSelector
 public:
 	enum AutoModes{
 		amFirst = 0,
-		amAimAndFire,
+		amAimAndFire1s,
+		amAimAndFire3s,
+		amAimAndFire5s,
+		amAimAndFire7s,
+		amAimAndFire9s,
+		amAimAndFire11s,
+		amAimAndFire13s,
 		amDoNothing,
 		amLast
 	};	

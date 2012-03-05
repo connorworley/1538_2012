@@ -68,7 +68,7 @@ void OperatorController::handle()
 		if(cb->getOperatorButton(4))
 		{
 			if(!bot->getShooter()->GetHoodState())
-				bot->getShooter()->SetSpeed(4720);
+				bot->getShooter()->SetSpeed(4810);
 			else
 				bot->getShooter()->SetSpeed(3000);
 			
