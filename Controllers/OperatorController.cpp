@@ -70,7 +70,12 @@ void OperatorController::handle()
 			if(!bot->getShooter()->GetHoodState())
 				bot->getShooter()->SetSpeed(4810);
 			else
-				bot->getShooter()->SetSpeed(3000);
+			{
+				if(!funnelState)
+					bot->getShooter()->SetSpeed(5300);
+				else
+					bot->getShooter()->SetSpeed(4100);
+			}
 			
 		} else {
 			bot->getShooter()->SetSpeed(0);
