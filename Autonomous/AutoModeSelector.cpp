@@ -103,39 +103,39 @@ void AutoModeSelector::writeToAutoModeController(AutoModeController * autoContro
 	{
 	
 	case amAimAndFire1s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 4810, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, 4810, 1);
-		autoController->addCommand(CMD_CHUTE, 0, 0, 4810, 3);
+		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 3800, 3);
+		autoController->addCommand(CMD_WAIT, 0, 0, 3800, 1);
+		autoController->addCommand(CMD_CHUTE, 0, 0, 3800, 3);
 		break;
 	case amAimAndFire3s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 4810, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, 4810, 3);
-		autoController->addCommand(CMD_CHUTE, 0, 0, 4810, 3);
+		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 3800, 3);
+		autoController->addCommand(CMD_WAIT, 0, 0, 3800, 3);
+		autoController->addCommand(CMD_CHUTE, 0, 0, 3800, 3);
 		break;
 	case amAimAndFire5s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 4810, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, 4810, 5);
-		autoController->addCommand(CMD_CHUTE, 0, 0, 4810, 3);
+		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 3800, 3);
+		autoController->addCommand(CMD_WAIT, 0, 0, 3800, 5);
+		autoController->addCommand(CMD_CHUTE, 0, 0, 3800, 3);
 		break;
 	case amAimAndFire7s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 4810, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, 4810, 7);
-		autoController->addCommand(CMD_CHUTE, 0, 0, 4810, 3);
+		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 3800, 3);
+		autoController->addCommand(CMD_WAIT, 0, 0, 3800, 7);
+		autoController->addCommand(CMD_CHUTE, 0, 0, 3800, 3);
 		break;
 	case amAimAndFire9s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 4810, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, 4810, 9);
-		autoController->addCommand(CMD_CHUTE, 0, 0, 4810, 3);
+		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 3800, 3);
+		autoController->addCommand(CMD_WAIT, 0, 0, 3800, 9);
+		autoController->addCommand(CMD_CHUTE, 0, 0, 3800, 3);
 		break;
 	case amAimAndFire11s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 4810, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, 4810, 11);
-		autoController->addCommand(CMD_CHUTE, 0, 0, 4810, 3);
+		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 3800, 3);
+		autoController->addCommand(CMD_WAIT, 0, 0, 3800, 11);
+		autoController->addCommand(CMD_CHUTE, 0, 0, 3800, 3);
 		break;
 	case amAimAndFire13s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 4810, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, 4810, 13);
-		autoController->addCommand(CMD_CHUTE, 0, 0, 4810, 3);
+		//autoController->addCommand(CMD_AUTOAIM, 0, 0, 3800, 3);
+		autoController->addCommand(CMD_WAIT, 0, 0, 3800, 13);
+		autoController->addCommand(CMD_CHUTE, 0, 0, 3800, 3);
 		break;
 		
 	case amDoNothing:
