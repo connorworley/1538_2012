@@ -36,7 +36,8 @@ averageAccel(0),
 previousAccel(0),
 PIDEnabled(true),
 counter(0),
-PID_P(0)
+PID_P(0),
+rawValue(0)
 {
 	motorA = new Victor(motorApwm);
 	motorB = new Victor(motorBpwm);
@@ -52,8 +53,7 @@ void Shooter::Handle()
 {
 	//wantedSpeed = 4000;
 	
-	double sensorPos = encoder->GetRate();
-	
+	double sensorPos = encoder->GetRate();	
 	double delta = sensorPos - previousAccel;
 	averageAccel += delta;
 	previousAccel = sensorPos;
@@ -64,9 +64,10 @@ void Shooter::Handle()
 	if(!lockI && PID_P > 0)
 		totalI += (PID_P > 25) ? 25 : PID_P;
 	
-	PID_P *= 0.008;
-	double PID_I = totalI * 0.00008;
-	PID_D *= 0.005;
+	PID_P /= 1000.0;
+	PID_P *= 1;
+	double PID_I = totalI * 0.00000;
+	PID_D *= 0.000;
 	
 	previousError = PID_P;
 		
@@ -90,7 +91,7 @@ void Shooter::Handle()
 			lockI = true;
 		}
 		
-		printf("Wanted: %f, Actual: %f, Output: %f, I total: %f\n", wantedSpeed, (float)encoder->GetRate(), output, totalI);
+		printf("Wanted: %f, Actual: %f, Output: %f, sensor pos: %f\n", wantedSpeed, (float)encoder->GetRate(), output, sensorPos);
 	
 		averageAccel = 0;
 	}
@@ -131,6 +132,8 @@ void Shooter::SetRaw(float value)
 		value = 0;
 	this->motorA->Set(value);
 	this->motorB->Set(-value);
+	
+	this->rawValue = value;
 }
 
 bool Shooter::PIDStatus()
@@ -182,13 +185,13 @@ bool Shooter::AtGoalSpeed()
 //		printf("At goal speed\r\n");
 	
 	//printf("IR Sensor: %f\n", irSensor->GetVoltage());
-	
-	return (PID_P > -1.1 && PID_P < 1.1);
+	//printf("Raw Value: %f\n", this->rawValue);
+	return (this->rawValue > -0.23 && this->rawValue < 0.23);
 }
 
 bool Shooter::ballReady()
 {
-	return (irSensor->GetVoltage() > 1.1);
+	return (irSensor->GetVoltage() < 2.0);
 	
 	//printf("IR Sensor: %f\n", irSensor->GetVoltage());
 	//return false;

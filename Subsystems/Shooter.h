@@ -38,6 +38,8 @@ class Shooter
 		
 		float previousError;
 		
+		float rawValue;
+		
 		float totalI;
 		bool lockI;
 		

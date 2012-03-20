@@ -68,13 +68,16 @@ void OperatorController::handle()
 		if(cb->getOperatorButton(4))
 		{
 			if(!bot->getShooter()->GetHoodState())
-				bot->getShooter()->SetSpeed(4810);
+				bot->getShooter()->SetSpeed(3800);
 			else
 			{
 				if(!funnelState)
-					bot->getShooter()->SetSpeed(5300);
+				{
+					printf("Funnel up!\n");
+					bot->getShooter()->SetSpeed(4800);
+				}
 				else
-					bot->getShooter()->SetSpeed(4100);
+					bot->getShooter()->SetSpeed(3000);
 			}
 			
 		} else {

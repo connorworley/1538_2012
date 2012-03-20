@@ -152,8 +152,8 @@ void RAWCRobot::handle()
 	shooter->Handle();
 	intake->Handle();
 	//shooter->ballReady();
-	//if(!shooter->AtGoalSpeed() && shooter->ballReady() || shooter->GetCurrentWantedSpeed() == 0 && shooter->ballReady())
-	//	chute->Set(Relay::kOff);
+	if(!shooter->AtGoalSpeed() && shooter->ballReady() || shooter->GetCurrentWantedSpeed() == 0 && shooter->ballReady() && chute->GetTop() != Relay::kReverse)
+		chute->Set(Relay::kOff);
 	
 	chute->Handle();
 
