@@ -50,7 +50,7 @@ AutoModeController::AutoModeController()
 }
 
 void AutoModeController::addCommand(RobotCommandNames_e cmd, 
-					cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4)
+					cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4, cmdArg arg5)
 {
 	// Make the new command
 	RobotCommand newCmd;
@@ -58,7 +58,8 @@ void AutoModeController::addCommand(RobotCommandNames_e cmd,
 	newCmd.encoderCount = arg1;
 	newCmd.heading = arg2;
 	newCmd.shooter = arg3;
-	newCmd.timeout = arg4;
+	newCmd.arm = arg4;
+	newCmd.timeout = arg5;
 	
 	
 	// add it to the end of the list
@@ -85,18 +86,27 @@ bool AutoModeController::handle()
 		case CMD_AUTOAIM:
 			result = bot->cameraPID(0);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
+			bot->getFunnel()->Set(curCmd.arm);
 			break;
 		case CMD_DRIVE:
 			result = driveDistanceWithHeading(curCmd.encoderCount, curCmd.heading);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
+			bot->getFunnel()->Set(curCmd.arm);
+
 			break;
 		case CMD_DRIVE_DIST:
 			result = driveDistancePWithHeading(curCmd.encoderCount, curCmd.heading);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
+			bot->getFunnel()->Set(curCmd.arm);
+
 			break;
 		case CMD_TURN:
 			result = turnHeading(curCmd.heading);
+			bot->askForShift(RAWCRobot::SHIFTER_POS_LOW);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
+			bot->getFunnel()->Set(curCmd.arm);
+			bot->getLeftEncoder()->Reset();
+
 			break;
 		case CMD_INTAKE:
 			result = false;
@@ -107,6 +117,9 @@ bool AutoModeController::handle()
 				bot->getIntake()->Set(Relay::kForward);
 			
 			bot->getShooter()->SetSpeed(curCmd.shooter);
+			
+			bot->getFunnel()->Set(curCmd.arm);
+
 			break;
 		case CMD_CHUTE:
 			result = false;
@@ -117,6 +130,8 @@ bool AutoModeController::handle()
 				bot->getChute()->Set(Relay::kForward);
 			
 			bot->getShooter()->SetSpeed(curCmd.shooter);
+			bot->getFunnel()->Set(curCmd.arm);
+
 			break;
 		case CMD_NULL:
 			thisIsNull = true;
@@ -129,6 +144,8 @@ bool AutoModeController::handle()
 			doNothing();
 			
 			bot->getShooter()->SetSpeed(curCmd.shooter);
+			bot->getFunnel()->Set(curCmd.arm);
+
 			
 			result = false;
 			break;
@@ -163,7 +180,7 @@ void AutoModeController::doNothing()
 
 bool AutoModeController::turnHeading(cmdArg heading)
 {
-	const float pGain = 0.9;
+	const float pGain = 1.2;
 	
 	float currentHeading = bot->getGyro()->GetAngle();
 	float turn = heading - currentHeading;
@@ -189,27 +206,7 @@ bool AutoModeController::turnHeading(cmdArg heading)
 
 bool AutoModeController::driveDistanceWithHeading(cmdArg distance, cmdArg heading)
 {
-	float distanceP = bot->getLeftEncoder()->GetRaw() - distance;
-	float currentDistance = bot->getLeftEncoder()->GetRaw();
-	float turn = heading - bot->getGyro()->GetAngle();
-	
-	turn /= 100;
-	distanceP *= 0.005;
-	
-	//printf("%f\r\n", currentDistance);
-		
-	bot->driveSpeedTurn(LimitMix(distanceP) * 0.90, LimitMix(-turn)*1.3, true);
-	if(currentDistance > distance)
-	{
-		return true;
-	}	
-	else
-		return false;
-}
-
-bool AutoModeController::driveDistancePWithHeading(cmdArg distance, cmdArg heading)
-{
-	float distanceP = bot->getLeftEncoder()->GetRaw() - distance;
+	float distanceP = distance - bot->getLeftEncoder()->GetRaw();
 	float currentDistance = bot->getLeftEncoder()->GetRaw();
 	float currentHeading = bot->getGyro()->GetAngle();
 	float turn = heading - bot->getGyro()->GetAngle();
@@ -217,9 +214,29 @@ bool AutoModeController::driveDistancePWithHeading(cmdArg distance, cmdArg headi
 	distanceP *= 0.005;
 	turn /= 100;
 	
-	//printf("%f\r\n", currentDistance);
+	printf("%f, %d\r\n", distanceP, bot->getLeftEncoder()->GetRaw());
 		
-	bot->driveSpeedTurn(LimitMix(distanceP) * 0.9, LimitMix(-turn)*1.3, true);
+	bot->driveSpeedTurn(LimitMix(-distanceP) * 0.9, LimitMix(-turn)*1.3, true);
+//	bot->driveSpeedTurn(LimitMix(-distanceP) * 1, 0, true);
+
+	return false;
+}
+
+bool AutoModeController::driveDistancePWithHeading(cmdArg distance, cmdArg heading)
+{
+	float distanceP = distance - bot->getLeftEncoder()->GetRaw();
+	float currentDistance = bot->getLeftEncoder()->GetRaw();
+	float currentHeading = bot->getGyro()->GetAngle();
+	float turn = heading - bot->getGyro()->GetAngle();
+		
+	distanceP *= 0.005;
+	turn /= 100;
+	
+	printf("%f, %d\r\n", distanceP, bot->getLeftEncoder()->GetRaw());
+		
+	bot->driveSpeedTurn(LimitMix(-distanceP) * 0.9, LimitMix(-turn)*1.3, true);
+//	bot->driveSpeedTurn(LimitMix(-distanceP) * 1, 0, true);
+
 	if((currentDistance < distance + 40 && currentDistance > distance - 40) &&
 	   (currentHeading < heading + 1 && currentHeading > heading -1))
 	{

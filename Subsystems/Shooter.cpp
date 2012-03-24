@@ -91,7 +91,7 @@ void Shooter::Handle()
 			lockI = true;
 		}
 		
-		printf("Wanted: %f, Actual: %f, Output: %f, sensor pos: %f\n", wantedSpeed, (float)encoder->GetRate(), output, sensorPos);
+		//printf("Wanted: %f, Actual: %f, Output: %f, sensor pos: %f\n", wantedSpeed, (float)encoder->GetRate(), output, sensorPos);
 	
 		averageAccel = 0;
 	}

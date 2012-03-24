@@ -48,6 +48,7 @@ typedef struct RobotCommand{
 	cmdArg shooter;
 	cmdArg intake;
 	cmdArg chute;
+	cmdArg arm;
 	cmdArg timeout;
 }RobotCommand;
 
@@ -83,7 +84,7 @@ private:
 public:
 	AutoModeController();
 	static AutoModeController* getInstance();
-	void addCommand(RobotCommandNames_e cmd, cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4);
+	void addCommand(RobotCommandNames_e cmd, cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4, cmdArg arg5);
 
 	bool handle();
 	void reset();

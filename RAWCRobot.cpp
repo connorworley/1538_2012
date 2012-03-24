@@ -44,15 +44,15 @@ RAWCRobot * RAWCRobot::getInstance()
 /// Constructor for RAWCRobot
 RAWCRobot::RAWCRobot()
 {
-	camera = &AxisCamera::GetInstance("10.15.38.11");
-	camera->WriteResolution(AxisCamera::kResolution_320x240);
-	camera->WriteColorLevel(77);
-	camera->WriteBrightness(21);
-	camera->WriteCompression(20);
-	
-
-	camera->WriteExposurePriority(47);
-	camera->WriteMaxFPS(10);
+//	camera = &AxisCamera::GetInstance("10.15.38.11");
+//	camera->WriteResolution(AxisCamera::kResolution_320x240);
+//	camera->WriteColorLevel(77);
+//	camera->WriteBrightness(21);
+//	camera->WriteCompression(20);
+//	
+//
+//	camera->WriteExposurePriority(47);
+//	camera->WriteMaxFPS(10);
 	
 	threshold = new Threshold(90, 155, 147, 255, 55, 201);
 	this->printCount = 0;
@@ -79,6 +79,7 @@ RAWCRobot::RAWCRobot()
 			true, CounterBase::k1X);
 	rightDriveEncoder = new Encoder(RIGHT_ENCODER_A_CHAN, RIGHT_ENCODER_B_CHAN);
 	leftDriveEncoder->SetDistancePerPulse(0.1007081038552321);
+	leftDriveEncoder->SetReverseDirection(false);
 	leftDriveEncoder->Start();
 	rightDriveEncoder->Start();
 	leftDriveEncoder->Reset();
@@ -169,112 +170,112 @@ void RAWCRobot::handle()
 
 	if (printCount % 10 == 0)
 	{
-		//printf("Vel: %d, Gyro: %f\r\n", this->leftDriveEncoder->GetRaw(), gyro->GetAngle());
+		printf("Vel: %d, Gyro: %f\r\n", this->leftDriveEncoder->GetRaw(), gyro->GetAngle());
 	}
 
 }
 
 bool RAWCRobot::cameraPID(float y)
 {
-	if (camera->IsFreshImage())
-	{
-		ParticleFilterCriteria2 criteria[] =
-		{
-		{ IMAQ_MT_BOUNDING_RECT_WIDTH, 30, 400, false, false },
-		{ IMAQ_MT_BOUNDING_RECT_HEIGHT, 40, 400, false, false } };
-		ColorImage *image = camera->GetImage();
-		//image->Write("img.jpg");
-		
-		if(image)
-		{
-			BinaryImage *thresholdImage = image->ThresholdHSL(90, 155, 145, 255, 55, 201);
-			//BinaryImage *thresholdImage = image->ThresholdRGB(*threshold); // get just the red target pixels
-			BinaryImage *bigObjectsImage = thresholdImage->RemoveSmallObjects(false, 1); // remove small objects (noise)
-			BinaryImage *convexHullImage = bigObjectsImage->ConvexHull(false); // fill in partial and full rectangles
-			BinaryImage *filteredImage = convexHullImage->ParticleFilter(criteria, 2); // find the rectangles
-			vector<ParticleAnalysisReport> *sortedReports = convexHullImage->GetOrderedParticleAnalysisReports(); // get the results
-			
-			bool foundTwoTargets = false;
-			RAWCLib::QSortParticleAnalysisReport(sortedReports->begin(), sortedReports->end());
-			
-			double xWanted = 0;
-			for(unsigned int i = 1; i < sortedReports->size(); i++)
-			{
-				ParticleAnalysisReport *r0 = &(sortedReports->at(i));
-				ParticleAnalysisReport *r1 = &(sortedReports->at(i - 1));
-				
-				if(r0->center_mass_y_normalized > r1->center_mass_y_normalized + 0.25 &&
-				   r0->center_mass_y_normalized < r1->center_mass_y_normalized - 0.25)
-				{
-					xWanted = (r0->center_mass_x_normalized + r1->center_mass_x_normalized)/2.0;
-					foundTwoTargets = true;
-					break;
-				}
-			}
-			
-			for(unsigned int i = 0; i < sortedReports->size(); i++)
-			{
-				ParticleAnalysisReport *r0 = &(sortedReports->at(i));
-				printf("particle: %d  center_mass_x: %d, center_mass_y: %d, %f, %f\n", i, r0->center_mass_y, r0->center_mass_y, r0->center_mass_x_normalized, r0->center_mass_y_normalized);
-			}
-
-			double PID_P = 0;
-			
-			if(foundTwoTargets)
-			{
-				PID_P = 0 - (xWanted);
-				
-				PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
-				
-				this->driveSpeedTurn(y, -PID_P, true);
-				printf("Using two targets\n");
-				//image->Write("unfiltered.jpg");
-				//convexHullImage->Write("img.jpg");
-			}
-			else
-			{
-				if(sortedReports->size() > 0)
-				{
-					ParticleAnalysisReport *r0 = &(sortedReports->at(sortedReports->size() - 1));
-					PID_P = 0 - r0->center_mass_x_normalized;
-				}
-				PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
-				this->driveSpeedTurn(y, -PID_P, true);
-				printf("Using one targets\n");
-				//image->Write("unfiltered.jpg");
-				//convexHullImage->Write("img.jpg");
-			}
-			
-			
-			// be sure to delete images after using them
-			
-			
-			delete sortedReports;
-			
-			delete filteredImage;
-			delete convexHullImage;
-			delete bigObjectsImage;
-			delete thresholdImage;
-			delete image;
-			Wait(0.001);
-			if(PID_P > -0.03 && PID_P < 0.03)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			printf("Unable to get image\r\n");
-		}
-	}
-	else
-	{
-		printf("Unable to get fresh image\r\n");
-	}
+//	if (camera->IsFreshImage())
+//	{
+//		ParticleFilterCriteria2 criteria[] =
+//		{
+//		{ IMAQ_MT_BOUNDING_RECT_WIDTH, 30, 400, false, false },
+//		{ IMAQ_MT_BOUNDING_RECT_HEIGHT, 40, 400, false, false } };
+//		ColorImage *image = camera->GetImage();
+//		//image->Write("img.jpg");
+//		
+//		if(image)
+//		{
+//			BinaryImage *thresholdImage = image->ThresholdHSL(90, 155, 145, 255, 55, 201);
+//			//BinaryImage *thresholdImage = image->ThresholdRGB(*threshold); // get just the red target pixels
+//			BinaryImage *bigObjectsImage = thresholdImage->RemoveSmallObjects(false, 1); // remove small objects (noise)
+//			BinaryImage *convexHullImage = bigObjectsImage->ConvexHull(false); // fill in partial and full rectangles
+//			BinaryImage *filteredImage = convexHullImage->ParticleFilter(criteria, 2); // find the rectangles
+//			vector<ParticleAnalysisReport> *sortedReports = convexHullImage->GetOrderedParticleAnalysisReports(); // get the results
+//			
+//			bool foundTwoTargets = false;
+//			RAWCLib::QSortParticleAnalysisReport(sortedReports->begin(), sortedReports->end());
+//			
+//			double xWanted = 0;
+//			for(unsigned int i = 1; i < sortedReports->size(); i++)
+//			{
+//				ParticleAnalysisReport *r0 = &(sortedReports->at(i));
+//				ParticleAnalysisReport *r1 = &(sortedReports->at(i - 1));
+//				
+//				if(r0->center_mass_y_normalized > r1->center_mass_y_normalized + 0.25 &&
+//				   r0->center_mass_y_normalized < r1->center_mass_y_normalized - 0.25)
+//				{
+//					xWanted = (r0->center_mass_x_normalized + r1->center_mass_x_normalized)/2.0;
+//					foundTwoTargets = true;
+//					break;
+//				}
+//			}
+//			
+//			for(unsigned int i = 0; i < sortedReports->size(); i++)
+//			{
+//				ParticleAnalysisReport *r0 = &(sortedReports->at(i));
+//				printf("particle: %d  center_mass_x: %d, center_mass_y: %d, %f, %f\n", i, r0->center_mass_y, r0->center_mass_y, r0->center_mass_x_normalized, r0->center_mass_y_normalized);
+//			}
+//
+//			double PID_P = 0;
+//			
+//			if(foundTwoTargets)
+//			{
+//				PID_P = 0 - (xWanted);
+//				
+//				PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
+//				
+//				this->driveSpeedTurn(y, -PID_P, true);
+//				printf("Using two targets\n");
+//				//image->Write("unfiltered.jpg");
+//				//convexHullImage->Write("img.jpg");
+//			}
+//			else
+//			{
+//				if(sortedReports->size() > 0)
+//				{
+//					ParticleAnalysisReport *r0 = &(sortedReports->at(sortedReports->size() - 1));
+//					PID_P = 0 - r0->center_mass_x_normalized;
+//				}
+//				PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
+//				this->driveSpeedTurn(y, -PID_P, true);
+//				printf("Using one targets\n");
+//				//image->Write("unfiltered.jpg");
+//				//convexHullImage->Write("img.jpg");
+//			}
+//			
+//			
+//			// be sure to delete images after using them
+//			
+//			
+//			delete sortedReports;
+//			
+//			delete filteredImage;
+//			delete convexHullImage;
+//			delete bigObjectsImage;
+//			delete thresholdImage;
+//			delete image;
+//			Wait(0.001);
+//			if(PID_P > -0.03 && PID_P < 0.03)
+//			{
+//				return true;
+//			}
+//			else
+//			{
+//				return false;
+//			}
+//		}
+//		else
+//		{
+//			printf("Unable to get image\r\n");
+//		}
+//	}
+//	else
+//	{
+//		printf("Unable to get fresh image\r\n");
+//	}
 	return false;
 }
 
