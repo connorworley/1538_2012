@@ -44,6 +44,9 @@ RAWCRobot * RAWCRobot::getInstance()
 /// Constructor for RAWCRobot
 RAWCRobot::RAWCRobot()
 {
+	timeSinceLastShot = 0;
+	previousChuteIRState = false;
+	
 	camera = &AxisCamera::GetInstance("10.15.38.11");
 	camera->WriteResolution(AxisCamera::kResolution_320x240);
 	camera->WriteColorLevel(77);
@@ -144,8 +147,23 @@ void RAWCRobot::handle()
 	shooter->Handle();
 	intake->Handle();
 	//shooter->ballReady();
+	
+	if(previousChuteIRState && !shooter->ballReady() && chute->GetTop())
+	{
+		printf("Ball shot\n");
+		timeSinceLastShot = Timer::GetFPGATimestamp();
+	}
+	
+	previousChuteIRState = shooter->ballReady();
+	
 	if(!shooter->AtGoalSpeed() && shooter->ballReady() || shooter->GetCurrentWantedSpeed() == 0 && shooter->ballReady() && chute->GetTop() != Relay::kReverse)
 		chute->Set(Relay::kOff);
+	if(timeSinceLastShot + RAWCConstants::getInstance()->getValueForKey("shooterDelayMS") >= Timer::GetFPGATimestamp())
+	{
+		printf("Delaying... %f\n", Timer::GetFPGATimestamp());
+		chute->Set(Relay::kOff);
+	}
+	
 	
 	chute->Handle();
 

@@ -51,12 +51,12 @@ AutoModeController::AutoModeController()
 
 Relay::Value toRelayValue(cmdArg val)
 {
-	if(val == 1)
+	if(val == 1.0)
 		return Relay::kForward;
-	if(val == -1)
+	else if(val == -1.0)
 		return Relay::kReverse;
-	
-	return Relay::kOff;
+	else
+		return Relay::kOff;
 }
 
 void AutoModeController::addCommand(RobotCommandNames_e cmd, 
@@ -69,8 +69,8 @@ void AutoModeController::addCommand(RobotCommandNames_e cmd,
 	newCmd.heading = arg2;
 	newCmd.shooter = arg3;
 	newCmd.arm = arg4;
-	newCmd.intake = toRelayValue(arg5);
-	newCmd.chute = toRelayValue(arg6);
+	newCmd.intake = arg5;
+	newCmd.chute = arg6;
 	newCmd.timeout = arg7;
 	
 	
@@ -104,30 +104,30 @@ bool AutoModeController::handle()
 			result = bot->cameraPID(0);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
 			bot->getFunnel()->Set(curCmd.arm);
-			bot->getIntake()->Set((Relay::Value)curCmd.intake);
-			bot->getChute()->Set((Relay::Value)curCmd.chute);
+			bot->getIntake()->Set(toRelayValue(curCmd.intake));
+			bot->getChute()->Set(toRelayValue(curCmd.chute));
 			break;
 		case CMD_DRIVE:
 			result = driveDistanceWithHeading(curCmd.encoderCount, curCmd.heading);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
 			bot->getFunnel()->Set(curCmd.arm);
-			bot->getIntake()->Set((Relay::Value)curCmd.intake);
-			bot->getChute()->Set((Relay::Value)curCmd.chute);
+			bot->getIntake()->Set(toRelayValue(curCmd.intake));
+			bot->getChute()->Set(toRelayValue(curCmd.chute));
 			break;
 		case CMD_DRIVE_DIST:
 			result = driveDistancePWithHeading(curCmd.encoderCount, curCmd.heading);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
 			bot->getFunnel()->Set(curCmd.arm);
-			bot->getIntake()->Set((Relay::Value)curCmd.intake);
-			bot->getChute()->Set((Relay::Value)curCmd.chute);
+			bot->getIntake()->Set(toRelayValue(curCmd.intake));
+			bot->getChute()->Set(toRelayValue(curCmd.chute));
 			break;
 		case CMD_TURN:
 			result = turnHeading(curCmd.heading);
 			bot->askForShift(RAWCRobot::SHIFTER_POS_LOW);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
 			bot->getFunnel()->Set(curCmd.arm);
-			bot->getIntake()->Set((Relay::Value)curCmd.intake);
-			bot->getChute()->Set((Relay::Value)curCmd.chute);
+			bot->getIntake()->Set(toRelayValue(curCmd.intake));
+			bot->getChute()->Set(toRelayValue(curCmd.chute));
 			bot->getLeftEncoder()->Reset();
 
 			break;
@@ -141,9 +141,11 @@ bool AutoModeController::handle()
 		case CMD_WAIT:
 			doNothing();
 			
+			bot->askForShift(RAWCRobot::SHIFTER_POS_LOW);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
 			bot->getFunnel()->Set(curCmd.arm);
-
+			bot->getIntake()->Set(toRelayValue(curCmd.intake));
+			bot->getChute()->Set(toRelayValue(curCmd.chute));
 			
 			result = false;
 			break;

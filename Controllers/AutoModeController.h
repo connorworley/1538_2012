@@ -44,9 +44,9 @@ typedef struct RobotCommand{
 	cmdArg encoderCount;
 	cmdArg heading;
 	cmdArg shooter;
+	cmdArg arm;
 	cmdArg intake;
 	cmdArg chute;
-	cmdArg arm;
 	cmdArg timeout;
 }RobotCommand;
 

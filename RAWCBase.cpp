@@ -71,6 +71,8 @@ public:
 #error
 #endif
 		
+		constants->insertKeyAndValue("shooterDelayMS", 1);
+		
 		constants->insertKeyAndValue("shooterKey", 3800);
 		constants->insertKeyAndValue("shooterFender", 4800);
 		constants->insertKeyAndValue("shooterFenderArmDown", 3000);

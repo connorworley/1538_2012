@@ -129,6 +129,9 @@ private:
 	
 	int printCount;
 	
+	double timeSinceLastShot;
+	bool previousChuteIRState;
+	
 	int shifterCounts;
 	
 	ShifterStates currentShiftState;
