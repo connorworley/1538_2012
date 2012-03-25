@@ -127,6 +127,11 @@ RAWCRobot::RAWCRobot()
 	setMode(DRIVE_MODE);
 }
 
+int RAWCRobot::getBallCount()
+{
+	return ballsShot;
+}
+
 /// Used to handle the recurring logic funtions inside the robot.
 /// Please call this once per update cycle.
 void RAWCRobot::handle()

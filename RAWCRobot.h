@@ -68,19 +68,20 @@ class RAWCRobot
 	Solenoid* getFunnel();
 	Solenoid* getRampManip();
 	
-	Timer* velTimer;
-	
-	int ballsShot;
-	
+	Timer* velTimer;	
 	void handle();
 
 	
 	void askForShift(ShifterPositions shifterPosition);
 	
+	int getBallCount();
+	
 	bool inHighGear();
 
 	
 private:
+	int ballsShot;
+	
 	float velocity;
 	double previous_encoder;
 	
