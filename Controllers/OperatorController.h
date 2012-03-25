@@ -23,6 +23,7 @@
 #include "../RAWCRobot.h"
 #include "WPILib.h"
 #include "../RAWCControlBoard.h"
+#include "../RAWCConstants.h"
 
 class OperatorController{
 	
@@ -36,6 +37,7 @@ private:
 	bool previousRMP;
 	bool RMPState;
 	int previousShooter;
+	RAWCConstants* constants;
 
 public:
 	RAWCControlBoard * cb;

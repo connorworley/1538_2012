@@ -121,6 +121,7 @@ void Shooter::SetSpeed(const float speed)
 void Shooter::Reset()
 {
 	this->wantedSpeed= 0;
+	this->hood->Set(false);
 	lockI = false;
 	totalI = 0;
 	encoder->Reset();
@@ -132,7 +133,6 @@ void Shooter::SetRaw(float value)
 		value = 0;
 	this->motorA->Set(value);
 	this->motorB->Set(-value);
-	
 	this->rawValue = value;
 }
 

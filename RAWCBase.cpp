@@ -71,47 +71,10 @@ public:
 #error
 #endif
 		
-		constants->insertKeyAndValue("KickerPosFar", zeroPoint + 21);//59
-		constants->insertKeyAndValue("KickerPosMiddle", zeroPoint + 6);//4
-		constants->insertKeyAndValue("KickerPosNear", zeroPoint + 3);//4
-		constants->insertKeyAndValue("KickerPosShort", zeroPoint);
-		
-		// No bounce
-		constants->insertKeyAndValue("KickerPosAutoFar1", zeroPoint + 20); //20
-		constants->insertKeyAndValue("KickerPosAutoFar2", zeroPoint + 18); //18
-		constants->insertKeyAndValue("KickerPosAutoFar3", zeroPoint + 14); //14
-		
-		// bounce
-		constants->insertKeyAndValue("KickerPosAutoFar1Bounce", zeroPoint+ 12);
-		constants->insertKeyAndValue("KickerPosAutoFar2Bounce", zeroPoint + 9);
-		constants->insertKeyAndValue("KickerPosAutoFar3Bounce", zeroPoint + 6);
-		
-		constants->insertKeyAndValue("KickerPosAutoMiddle1", zeroPoint + 5); //5
-		constants->insertKeyAndValue("KickerPosAutoMiddle2", zeroPoint + 4); //4
-		
-		constants->insertKeyAndValue("KickerPosAutoNear", zeroPoint + 2);
-				
-		constants->insertKeyAndValue("turnP", 0.033);
-		constants->insertKeyAndValue("turnI", 0.020);
-		constants->insertKeyAndValue("turnD", 0.26);
-				
-		constants->insertKeyAndValue("turnDeadband", 0.025);
-				
-		constants->insertKeyAndValue("integralLimit", .8);
-		constants->insertKeyAndValue("turnA", 0.4);
-		constants->insertKeyAndValue("turnV", -0.45);
-		
-		constants->insertKeyAndValue("winchP", 0.17);
-		constants->insertKeyAndValue("winchI", 0.015);
-		constants->insertKeyAndValue("winchD", 0.6);
-		constants->insertKeyAndValue("winchI_max", 0.5);
-		
-		constants->insertKeyAndValue("winchI_min", 5);
-		constants->insertKeyAndValue("lowKI", 0.025);
-		constants->insertKeyAndValue("lowKP", 0.23);
-		
-		constants->insertKeyAndValue("SensitivityHigh", 1.53);
-		constants->insertKeyAndValue("SensitivityLow", 1.53);
+		constants->insertKeyAndValue("shooterKey", 3800);
+		constants->insertKeyAndValue("shooterFender", 4800);
+		constants->insertKeyAndValue("shooterFenderArmDown", 3000);
+
 		
 		constants->save();
 		
@@ -119,16 +82,9 @@ public:
 	void RobotInit(void) {	
 	}
 	void DisabledInit(void) {
+		autoController->reset();
 		constants->restoreData();
-		/*double p = constants->getValueForKey("winchP");
-			double i = constants->getValueForKey("winchI");
-			double d = constants->getValueForKey("winchD");
-			double Imax = constants->getValueForKey("winchI_max");
-			double Imin = constants->getValueForKey("winchI_min");
-			double lowKI = constants->getValueForKey("lowKI");
-			double lowKP = constants->getValueForKey("lowKP");
-			
-			bot->kicker->winchPID->changeGains(p,i,d,Imax,0,0,Imin,lowKI,lowKP);*/
+	
 		autoIndex = 1;
 	}
 	void AutonomousInit(void) {

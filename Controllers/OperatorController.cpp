@@ -23,11 +23,13 @@
 #include "../RAWCControlBoard.h"
 #include "../RAWCRobot.h"
 #include "../Declarations.h"
+#include "../RAWCConstants.h"
 
 // Constructor
 // TODO: We might not need to pass in Joysticks, if they come from the ControlBoard
 OperatorController::OperatorController()
 {
+	constants = RAWCConstants::getInstance();
 	bot = RAWCRobot::getInstance();
 	cb = RAWCControlBoard::getInstance();
 	telescopeExtend = false;
@@ -68,16 +70,16 @@ void OperatorController::handle()
 		if(cb->getOperatorButton(4))
 		{
 			if(!bot->getShooter()->GetHoodState())
-				bot->getShooter()->SetSpeed(3800);
+				bot->getShooter()->SetSpeed(constants->getValueForKey("shooterKey"));
 			else
 			{
 				if(!funnelState)
 				{
 					printf("Funnel up!\n");
-					bot->getShooter()->SetSpeed(4800);
+					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFender"));
 				}
 				else
-					bot->getShooter()->SetSpeed(3000);
+					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFenderArmDown"));
 			}
 			
 		} else {

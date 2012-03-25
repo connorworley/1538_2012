@@ -127,14 +127,8 @@ private:
 	
 	float previousAngle;
 	
-	bool wantToDeployArm;
-	bool wantToHang;
-	bool wantToSelfRight ;
-	bool wantToResetHang;
-	bool wantToFixArm;
-	
-	int ptoJimmyCounts;
 	int printCount;
+	
 	int shifterCounts;
 	
 	ShifterStates currentShiftState;

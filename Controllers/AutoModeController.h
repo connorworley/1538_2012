@@ -35,8 +35,6 @@ typedef enum RobotCommandNames_e
 	CMD_AUTOAIM,
 	CMD_DRIVE,
 	CMD_DRIVE_DIST,
-	CMD_INTAKE,
-	CMD_CHUTE,
 	CMD_WAIT,
 	CMD_TURN
 }RobotCommandNames_e;
@@ -84,7 +82,7 @@ private:
 public:
 	AutoModeController();
 	static AutoModeController* getInstance();
-	void addCommand(RobotCommandNames_e cmd, cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4, cmdArg arg5);
+	void addCommand(RobotCommandNames_e cmd, cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4, cmdArg arg5, cmdArg arg6, cmdArg arg7);
 
 	bool handle();
 	void reset();
