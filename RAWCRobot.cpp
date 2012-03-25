@@ -44,6 +44,7 @@ RAWCRobot * RAWCRobot::getInstance()
 /// Constructor for RAWCRobot
 RAWCRobot::RAWCRobot()
 {
+	ballsShot = 0;
 	timeSinceLastShot = 0;
 	previousChuteIRState = false;
 	
@@ -151,6 +152,7 @@ void RAWCRobot::handle()
 	if(previousChuteIRState && !shooter->ballReady() && chute->GetTop())
 	{
 		printf("Ball shot\n");
+		ballsShot++;
 		timeSinceLastShot = Timer::GetFPGATimestamp();
 	}
 	
@@ -160,7 +162,7 @@ void RAWCRobot::handle()
 		chute->Set(Relay::kOff);
 	if(timeSinceLastShot + RAWCConstants::getInstance()->getValueForKey("shooterDelayMS") >= Timer::GetFPGATimestamp())
 	{
-		printf("Delaying... %f\n", Timer::GetFPGATimestamp());
+		//printf("Delaying... %f\n", Timer::GetFPGATimestamp());
 		chute->Set(Relay::kOff);
 	}
 	

@@ -70,6 +70,8 @@ class RAWCRobot
 	
 	Timer* velTimer;
 	
+	int ballsShot;
+	
 	void handle();
 
 	

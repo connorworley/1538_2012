@@ -60,7 +60,7 @@ Relay::Value toRelayValue(cmdArg val)
 }
 
 void AutoModeController::addCommand(RobotCommandNames_e cmd, 
-					cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4, cmdArg arg5, cmdArg arg6, cmdArg arg7)
+					cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4, cmdArg arg5, cmdArg arg6, cmdArg arg7, cmdArg arg8)
 {
 	// Make the new command
 	RobotCommand newCmd;
@@ -71,7 +71,8 @@ void AutoModeController::addCommand(RobotCommandNames_e cmd,
 	newCmd.arm = arg4;
 	newCmd.intake = arg5;
 	newCmd.chute = arg6;
-	newCmd.timeout = arg7;
+	newCmd.nBallsWanted = arg7;
+	newCmd.timeout = arg8;
 	
 	
 	// add it to the end of the list
@@ -148,6 +149,10 @@ bool AutoModeController::handle()
 			bot->getChute()->Set(toRelayValue(curCmd.chute));
 			
 			result = false;
+			
+			if(bot->ballsShot >= curCmd.nBallsWanted)
+				result = true;
+			
 			break;
 		
 		default :
