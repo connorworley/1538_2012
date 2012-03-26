@@ -26,8 +26,14 @@ public:
 	void addCommand(char* scriptName, char* type, double param, double timeout);
 	
 private:
+	RAWCRobot* bot;
+	
 	const char* scriptFilename;
 	map<char*, AutonCommand*> commands;
+	
+	map<char*, AutonCommand*>::iterator selector;
+	void cycleMode();
+	char* getModeName();
 	
 	Timer* timer;
 	

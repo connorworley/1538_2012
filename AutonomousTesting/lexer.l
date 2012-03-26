@@ -4,8 +4,8 @@
 %}
 
 %%
-[0-9\.]+                yylval.number=atof(yytext); return NUMBER;
-[a-zA-Z0-9][a-zA-Z0-9]* yylval.string=strdup(yytext); return WORD;
+[0-9\.-]+                yylval.number=atof(yytext); return NUMBER;
+[a-zA-Z0-9_][a-zA-Z0-9_]* yylval.string=strdup(yytext); return WORD;
 \[                      return LBRACKET;
 \]                      return RBRACKET;
 ;                       return SEMICOLON;

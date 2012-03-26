@@ -1,4 +1,4 @@
 [Wait1sAndFire]
-WAIT 0 0;
-CHUTE 1 0;
+NOTHING 0 1;
 SHOOTER 4800 0;
+CHUTE 1 0;

@@ -2,7 +2,8 @@
 
 AutonController::AutonController(const char* filename)
 {
-	//timer = new Timer();
+	bot = RAWCRobot::getInstance();
+	timer = new Timer();
 	scriptFilename = filename;
 	reloadCommands();
 }
@@ -17,10 +18,9 @@ void AutonController::reloadCommands()
 {
 	for(std::map<char*, AutonCommand*>::iterator it = commands.begin(); it != commands.end(); it++)
 	{
-		deleteLinkedList((*it).second);
+		deleteLinkedList(it->second);
 	}
 	commands.clear();
-	//timer->Reset();
 
 	FILE* file = fopen(scriptFilename, "r");
 	if(!file)
@@ -34,17 +34,78 @@ void AutonController::reloadCommands()
 		printf("Syntax error in %s!\n", scriptFilename);
 		for(std::map<char*, AutonCommand*>::iterator it = commands.begin(); it != commands.end(); it++)
 		{
-			deleteLinkedList((*it).second);
+			deleteLinkedList(it->second);
 		}
 		commands.clear();
 	}
+	
+	selector = commands.begin();
+	
+	timer->Start();
 
 	fclose(file);
 }
 
 void AutonController::handle()
 {
-
+	AutonCommand* curCmd = selector->second;
+	if(curCmd == NULL)
+		return;
+	
+	bool result = false;
+	
+	if(curCmd->type == "DRIVE")
+	{
+		
+	} else if(curCmd->type == "TURN")
+	{
+		
+	} else if(curCmd->type == "SHOOTER")
+	{
+		bot->getShooter()->SetSpeed(curCmd->parameter);
+		result = true;
+	} else if(curCmd->type == "ARMS")
+	{
+		if(curCmd->parameter == 1)
+			bot->getFunnel()->Set(true);
+		else
+			bot->getFunnel()->Set(false);
+	} else if(curCmd->type == "INTAKE")
+	{
+		if(curCmd->parameter == 1)
+			bot->getIntake()->Set(Relay::kForward);
+		else if(curCmd->parameter == -1)
+			bot->getIntake()->Set(Relay::kReverse);
+		else
+			bot->getIntake()->Set(Relay::kOff);
+		
+		result = true;
+	} else if(curCmd->type == "CHUTE")
+	{
+		if(curCmd->parameter == 1)
+			bot->getChute()->Set(Relay::kForward);
+		else if(curCmd->parameter == -1)
+			bot->getChute()->Set(Relay::kReverse);
+		else
+			bot->getChute()->Set(Relay::kOff);
+		
+		result = true;
+	} else if(curCmd->type == "WAIT_FOR_BALLS")
+	{
+		result = bot->getBallCount() >= curCmd->parameter;
+	} else if(curCmd->type == "NOTHING")
+	{
+		// waiting...
+	} else
+	{
+		printf("Unknown command \"%s\" in script %s (file %s)!\n", curCmd->type, selector->first, scriptFilename);
+	}
+	
+	if(result || timer->Get() > curCmd->timeout)
+	{
+		selector->second = curCmd->next;
+		delete curCmd;
+	}
 }
 
 void AutonController::addCommand(char* scriptName, char* type, double param, double timeout)
@@ -64,6 +125,18 @@ void AutonController::addCommand(char* scriptName, char* type, double param, dou
 		x = &((**x).next);
 	}
 	*x = c;
+}
+
+void AutonController::cycleMode()
+{
+	selector++;
+	if(selector == commands.end())
+		selector = commands.begin();
+}
+
+char* AutonController::getModeName()
+{
+	return selector->first;
 }
 
 void AutonController::deleteLinkedList(AutonCommand* item)
