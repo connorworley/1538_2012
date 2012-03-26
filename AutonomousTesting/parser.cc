@@ -20,10 +20,11 @@ static const char yysccsid[] = "@(#)yaccpar	1.9 (Berkeley) 02/21/93";
 
 #include <stdio.h>
 #include <string.h>
+#include "AutonController.h"
  
 void yyerror(const char *str)
 {
-        fprintf(stderr,"error: %s\n",str);
+        /*printf("error: %s\n",str);*/
 }
  
 
@@ -39,21 +40,18 @@ extern "C"
 
 extern FILE* yyin;
 
-int parse_auton(const char* fileName)
-{
-	FILE *f = fopen(fileName, "r");
-	if(!f) {
-		printf("failure! can't read %s\n", fileName);
-		return -1;
-	}
+AutonController* controller = NULL;
 
-	yyin = f;
-	do {
-        	yyparse();
-	} while(!feof(yyin));
+int AutonController::parseCommands(FILE* file)
+{
+	controller = this;
+	yyin = file;
+	return yyparse();
 } 
 
-#line 45 "parser.y"
+char* section = NULL;
+
+#line 43 "parser.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -66,7 +64,7 @@ typedef union
         char* string;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 69 "parser.cc"
+#line 67 "parser.cc"
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
 /* compatibility with FreeBSD */
@@ -101,34 +99,37 @@ extern int YYPARSE_DECL();
 #define SEMICOLON 261
 #define YYERRCODE 256
 static const short yylhs[] = {                           -1,
-    0,    0,    1,    1,
+    0,    2,    2,    3,    3,    1,
 };
 static const short yylen[] = {                            2,
-    0,    2,    3,    4,
+    2,    0,    2,    1,    4,    3,
 };
-static const short yydefred[] = {                         1,
-    0,    0,    0,    2,    0,    0,    0,    3,    4,
+static const short yydefred[] = {                         0,
+    0,    0,    2,    0,    0,    6,    0,    4,    3,    0,
+    0,    5,
 };
-static const short yydgoto[] = {                          1,
-    4,
+static const short yydgoto[] = {                          2,
+    3,    5,    9,
 };
-static const short yysindex[] = {                         0,
- -258, -255, -254,    0, -252, -257, -253,    0,    0,
+static const short yysindex[] = {                      -257,
+ -255,    0,    0, -256, -258,    0, -252,    0,    0, -251,
+ -254,    0,
 };
 static const short yyrindex[] = {                         0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    8,    0,    0,    0,    0,    0,
+    0,    0,
 };
 static const short yygindex[] = {                         0,
-    0,
+    4,    0,    0,
 };
-#define YYTABLESIZE 8
-static const short yytable[] = {                          2,
-    3,    5,    8,    6,    7,    0,    0,    9,
+#define YYTABLESIZE 9
+static const short yytable[] = {                          7,
+    1,    1,    4,    6,   10,   11,   12,    1,    8,
 };
 static const short yycheck[] = {                        258,
-  259,  257,  260,  258,  257,   -1,   -1,  261,
+  259,  259,  258,  260,  257,  257,  261,    0,    5,
 };
-#define YYFINAL 1
+#define YYFINAL 2
 #ifndef YYDEBUG
 #define YYDEBUG 0
 #endif
@@ -146,11 +147,13 @@ static const char *yyname[] = {
 "RBRACKET","SEMICOLON",
 };
 static const char *yyrule[] = {
-"$accept : commands",
+"$accept : start",
+"start : section commands",
 "commands :",
 "commands : commands command",
-"command : LBRACKET WORD RBRACKET",
+"command : section",
 "command : WORD NUMBER NUMBER SEMICOLON",
+"section : LBRACKET WORD RBRACKET",
 
 };
 #endif
@@ -187,9 +190,9 @@ YYSTYPE  yylval;
 
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 68 "parser.y"
+#line 74 "parser.y"
 
-#line 192 "parser.cc"
+#line 195 "parser.cc"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -395,19 +398,19 @@ yyreduce:
         memset(&yyval, 0, sizeof yyval);
     switch (yyn)
     {
-case 3:
-#line 59 "parser.y"
+case 5:
+#line 63 "parser.y"
 	{
-		printf("In section: %s\n",yystack.l_mark[-1].string);
+		controller->addCommand(section, yystack.l_mark[-3].string, yystack.l_mark[-2].number, yystack.l_mark[-1].number);
 	}
 break;
-case 4:
-#line 64 "parser.y"
+case 6:
+#line 70 "parser.y"
 	{
-		printf("%s %f (timeout %f)\n",yystack.l_mark[-3].string,yystack.l_mark[-2].number,yystack.l_mark[-1].number);
+		section = yystack.l_mark[-1].string;
 	}
 break;
-#line 410 "parser.cc"
+#line 413 "parser.cc"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

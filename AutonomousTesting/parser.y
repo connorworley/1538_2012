@@ -1,10 +1,11 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "AutonController.h"
  
 void yyerror(const char *str)
 {
-        fprintf(stderr,"error: %s\n",str);
+        //printf("error: %s\n",str);
 }
  
 
@@ -20,19 +21,16 @@ extern "C"
 
 extern FILE* yyin;
 
-int parse_auton(const char* fileName)
-{
-	FILE *f = fopen(fileName, "r");
-	if(!f) {
-		printf("failure! can't read %s\n", fileName);
-		return -1;
-	}
+AutonController* controller = NULL;
 
-	yyin = f;
-	do {
-        	yyparse();
-	} while(!feof(yyin));
+int AutonController::parseCommands(FILE* file)
+{
+	controller = this;
+	yyin = file;
+	return yyparse();
 } 
+
+char* section = NULL;
 
 %}
 
@@ -49,20 +47,28 @@ int parse_auton(const char* fileName)
 }
 
 %%
+start:
+	section commands
+	;	
+
 commands:
 	|
 	commands command
 	;
 
 command:
-	LBRACKET WORD RBRACKET
-	{
-		printf("In section: %s\n",$2);
-	}
+	section
 	|
 	WORD NUMBER NUMBER SEMICOLON
 	{
-		printf("%s %f (timeout %f)\n",$1,$2,$3);
+		controller->addCommand(section, $1, $2, $3);
+	}
+	;
+	
+section:
+	LBRACKET WORD RBRACKET
+	{
+		section = $2;
 	}
 	;
 %%
