@@ -105,6 +105,7 @@ void AutonController::handle()
 	{
 		selector->second = curCmd->next;
 		delete curCmd;
+		timer->Reset();
 	}
 }
 
