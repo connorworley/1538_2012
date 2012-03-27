@@ -150,7 +150,7 @@ bool AutoModeController::handle()
 			
 			result = false;
 			
-			if(bot->getBallCount() >= curCmd.nBallsWanted)
+			if(bot->getBallCount() >= curCmd.nBallsWanted && curCmd.nBallsWanted > 0)
 				result = true;
 			
 			break;
