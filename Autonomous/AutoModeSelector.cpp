@@ -83,7 +83,7 @@ string AutoModeSelector::description()
 		s.assign(str);
 		break;
 	case amDoNothing:
-		sprintf(str,"Do Nothing (Far Zone) ");
+		sprintf(str,"Do Nothing             s");
 		s.assign(str);
 		break;
 	default:
