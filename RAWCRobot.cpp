@@ -44,6 +44,8 @@ RAWCRobot * RAWCRobot::getInstance()
 /// Constructor for RAWCRobot
 RAWCRobot::RAWCRobot()
 {
+	server = new RAWCServer(8888);
+	
 	ballsShot = 0;
 	timeSinceLastShot = 0;
 	previousChuteIRState = false;
@@ -136,6 +138,10 @@ int RAWCRobot::getBallCount()
 /// Please call this once per update cycle.
 void RAWCRobot::handle()
 {
+	server->handle();
+	
+	server->print("Working!");
+	
 	printCount++;
 
 	// Default drive

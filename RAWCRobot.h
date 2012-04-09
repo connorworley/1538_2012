@@ -28,6 +28,8 @@
 #include "subsystems/Shooter.h"
 #include "subsystems/Roller.h"
 
+#include "server/RAWCServer.h"
+
 /// This class provides core robot functionality and encapsulates 
 /// motors, sensors, relays, etc.
 ///
@@ -80,6 +82,8 @@ class RAWCRobot
 
 	
 private:
+	RAWCServer* server;
+	
 	int ballsShot;
 	
 	float velocity;

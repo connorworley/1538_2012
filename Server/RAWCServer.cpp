@@ -53,7 +53,7 @@ void* RAWCServer::handleConnection(void* arg)
 			send(client, s, strlen(s), 0);
 		}
 		stack->unlock();
-		usleep(100000);
+		Wait(0.1);
 	}
 
 	delete (threadArgs*)arg;
@@ -78,8 +78,8 @@ void RAWCServer::print(char* format, ...)
 void RAWCServer::handle()
 {
     struct sockaddr client;
-    int addrlen = sizeof(client);
-    int result = accept(fd, &client, (socklen_t*)&addrlen);
+    int s_client = sizeof(client);
+    int result = accept(fd, &client, &s_client);
     if(result == -1 && errno == EWOULDBLOCK)
     {
     	return;

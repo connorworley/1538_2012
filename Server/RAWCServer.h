@@ -1,8 +1,8 @@
+#include "WPILib.h"
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
+#include <inetLib.h>
+#include <sockLib.h>
 #include <fcntl.h>
 #include <queue>
 #include <vector>
