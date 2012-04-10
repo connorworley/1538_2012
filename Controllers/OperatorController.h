@@ -37,6 +37,11 @@ private:
 	bool previousRMP;
 	bool RMPState;
 	int previousShooter;
+	double shooterSpeedOffset;
+	double shooterSpeedOffsetFender;
+	double shooterSpeedOffsetFenderFunnel;
+	bool previousInc;
+	bool previousDec;
 	RAWCConstants* constants;
 
 public:

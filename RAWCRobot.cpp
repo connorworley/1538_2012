@@ -45,6 +45,8 @@ RAWCRobot * RAWCRobot::getInstance()
 /// Constructor for RAWCRobot
 RAWCRobot::RAWCRobot()
 {
+	server = new RAWCServer(55555);
+	
 	ballsShot = 0;
 	timeSinceLastShot = 0;
 	previousChuteIRState = false;
@@ -58,6 +60,7 @@ RAWCRobot::RAWCRobot()
 
 	camera->WriteExposurePriority(1);
 	camera->WriteMaxFPS(20);
+
 
 	threshold = new Threshold(90, 155, 147, 255, 55, 201);
 
@@ -136,7 +139,7 @@ int RAWCRobot::getBallCount()
 /// Used to handle the recurring logic funtions inside the robot.
 /// Please call this once per update cycle.
 void RAWCRobot::handle()
-{
+{		
 	printCount++;
 
 	// Default drive
@@ -189,7 +192,8 @@ void RAWCRobot::handle()
 
 	if (printCount % 10 == 0)
 	{
-	//	printf("Vel: %d, Gyro: %f\r\n", this->leftDriveEncoder->GetRaw(), gyro->GetAngle());
+		//printf("Vel: %d, Gyro: %f\r\n", this->leftDriveEncoder->GetRaw(), gyro->GetAngle());
+		server->print("Working!\n");
 	}
 
 }
@@ -498,4 +502,9 @@ void RAWCRobot::setRightMotors(float val)
 bool RAWCRobot::inHighGear()
 {
 	return (currentShiftState == SHIFTER_STATE_HIGH);
+}
+
+RAWCServer* RAWCRobot::getServer()
+{
+	return server;
 }
