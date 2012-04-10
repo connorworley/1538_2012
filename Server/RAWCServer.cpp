@@ -29,7 +29,12 @@ RAWCServer::RAWCServer(unsigned int port)
     }
 
     fd = sock_fd;
+    
     fcntl(fd, F_SETFL, O_NONBLOCK);
+    int on = TRUE;
+    ioctl(fd, FIONBIO, (int)&on);
+    
+    printf("Successfully started server on port %d\n", port);
 }
 
 RAWCServer::~RAWCServer()
@@ -42,6 +47,7 @@ void* RAWCServer::handleConnection(void* arg)
 	printf("Handler thread started\n");
 	int client = ((threadArgs*)arg)->client;
 	Stack* stack = ((threadArgs*)arg)->stack;
+	std::vector<RAWCServer::Stack*>* stacks = ((threadArgs*)arg)->stacks;
 
 	while(true)
 	{
@@ -50,13 +56,28 @@ void* RAWCServer::handleConnection(void* arg)
 		{
 			char* s = stack->queue()->front();
 			stack->queue()->pop();
-			send(client, s, strlen(s), 0);
+			for(int i = 0; i < strlen(s); i++)
+			{
+				char c = toascii(s[i]);
+				int result = send(client, &c, 1, 0);
+				if(result == -1)
+				{
+					for(std::vector<RAWCServer::Stack*>::iterator it = stacks->begin(); it != stacks->end(); it++)
+					{
+						if(*it == stack)
+						{
+							stacks->erase(it);
+						}
+					}
+					delete stack;
+					delete (threadArgs*)arg;
+					return NULL;
+				}	
+			}
 		}
 		stack->unlock();
 		Wait(0.1);
 	}
-
-	delete (threadArgs*)arg;
 	return NULL;
 }
 
@@ -66,6 +87,7 @@ void RAWCServer::print(char* format, ...)
 	va_list args;
 	va_start(args, format);
 	vsnprintf(buffer, 256, format, args);
+	//printf("Printing to network: %s\n", buffer);
 	for(std::vector<RAWCServer::Stack*>::iterator it = stacks.begin(); it != stacks.end(); it++)
 	{
 		(*it)->lock();
@@ -79,6 +101,7 @@ void RAWCServer::handle()
 {
     struct sockaddr client;
     int s_client = sizeof(client);
+    //return;
     int result = accept(fd, &client, &s_client);
     if(result == -1 && errno == EWOULDBLOCK)
     {
@@ -94,6 +117,7 @@ void RAWCServer::handle()
 
     args->client = result;
     args->stack = s;
+    args->stacks = &stacks;
 
     pthread_t thread;
     pthread_create(&thread, NULL, &handleConnection, args);
@@ -109,6 +133,7 @@ RAWCServer::Stack::Stack()
 RAWCServer::Stack::~Stack()
 {
 	pthread_mutex_destroy(mutex);
+	delete m_queue;
 	delete mutex;
 }
 

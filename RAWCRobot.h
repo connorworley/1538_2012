@@ -79,6 +79,8 @@ class RAWCRobot
 	int getBallCount();
 	
 	bool inHighGear();
+	
+	RAWCServer* getServer();
 
 	
 private:

@@ -30,14 +30,14 @@ wantedAccel(0),
 wantedSpeed(0),
 previousWantedAccel(0),
 previousError(0),
+rawValue(0),
 totalI(0),
 lockI(false),
 averageAccel(0),
 previousAccel(0),
 PIDEnabled(true),
 counter(0),
-PID_P(0),
-rawValue(0)
+PID_P(0)
 {
 	motorA = new Victor(motorApwm);
 	motorB = new Victor(motorBpwm);
@@ -59,15 +59,17 @@ void Shooter::Handle()
 	previousAccel = sensorPos;
 	
 	PID_P = wantedSpeed - sensorPos;
-	double PID_D = previousError - PID_P;
 	
 	if(!lockI && PID_P > 0)
-		totalI += (PID_P > 25) ? 25 : PID_P;
+		totalI += (PID_P > 0.04) ? 0.04 : PID_P;
 	
 	PID_P /= 1000.0;
-	PID_P *= 1;
-	double PID_I = totalI * 0.00000;
-	PID_D *= 0.000;
+	PID_P *= 3.2;
+	double PID_I = totalI * 0.3000;
+	
+	
+	double PID_D = previousError - PID_P;
+	PID_D *= 0.94;
 	
 	previousError = PID_P;
 		
@@ -91,7 +93,7 @@ void Shooter::Handle()
 			lockI = true;
 		}
 		
-		//printf("Wanted: %f, Actual: %f, Output: %f, sensor pos: %f\n", wantedSpeed, (float)encoder->GetRate(), output, sensorPos);
+		printf("Wanted: %f, Actual: %f, Output: %f, sensor pos: %f\n", wantedSpeed, (float)encoder->GetRate(), output, sensorPos);
 	
 		averageAccel = 0;
 	}

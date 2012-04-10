@@ -4,6 +4,7 @@
 #include <inetLib.h>
 #include <sockLib.h>
 #include <fcntl.h>
+#include <ioctl.h>
 #include <queue>
 #include <vector>
 #include <pthread.h>
@@ -41,4 +42,5 @@ private:
 typedef struct threadArgs {
 	int client;
 	RAWCServer::Stack* stack;
+	std::vector<RAWCServer::Stack*>* stacks;
 } threadArgs;

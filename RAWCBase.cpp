@@ -74,8 +74,8 @@ public:
 		constants->insertKeyAndValue("shooterDelayMS", 1);
 		
 		constants->insertKeyAndValue("shooterKey", 3800);
-		constants->insertKeyAndValue("shooterFender", 4800);
-		constants->insertKeyAndValue("shooterFenderArmDown", 3000);
+		constants->insertKeyAndValue("shooterFender", 5200);
+		constants->insertKeyAndValue("shooterFenderArmDown", 3400);
 
 		
 		constants->save();
@@ -117,6 +117,7 @@ public:
 		Wait(0.01);
 	}
 	void DisabledPeriodic(void)  {
+		bot->getServer()->handle();
 		autoController->reset();	
 		if( opController->cb->getButtonAutoSelect())
 		{
@@ -135,12 +136,14 @@ public:
 		//sendIOPortData();
 	}
 	void AutonomousPeriodic(void) {
+		bot->getServer()->handle();
 		autoController->handle();
 		bot->handle();
 		
 		//sendIOPortData();
 	}
 	void TeleopPeriodic(void) {
+		bot->getServer()->handle();
 		opController->handle();
 		bot->handle();
 		
