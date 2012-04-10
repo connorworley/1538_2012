@@ -21,6 +21,7 @@
 #include "RAWCRobot.h"
 #include <math.h>
 #include "RAWCConstants.h"
+#include "RAWCControlBoard.h"
 RAWCRobot* RAWCRobot::singletonInstance = NULL;
 #include "CounterBase.h"
 #include "RAWCLib.h"
@@ -50,13 +51,13 @@ RAWCRobot::RAWCRobot()
 	
 	camera = &AxisCamera::GetInstance("10.15.38.11");
 	camera->WriteResolution(AxisCamera::kResolution_320x240);
-	camera->WriteColorLevel(77);
-	camera->WriteBrightness(21);
+	camera->WriteColorLevel(81);
+	camera->WriteBrightness(1);
 	camera->WriteCompression(20);
 	
 
-	camera->WriteExposurePriority(47);
-	camera->WriteMaxFPS(10);
+	camera->WriteExposurePriority(1);
+	camera->WriteMaxFPS(20);
 
 	threshold = new Threshold(90, 155, 147, 255, 55, 201);
 
@@ -154,7 +155,7 @@ void RAWCRobot::handle()
 	intake->Handle();
 	//shooter->ballReady();
 	
-	if(previousChuteIRState && !shooter->ballReady() && chute->GetTop())
+	if(previousChuteIRState && !shooter->ballReady() && chute->GetTop() == Relay::kForward)
 	{
 		printf("Ball shot\n");
 		ballsShot++;
@@ -165,12 +166,14 @@ void RAWCRobot::handle()
 	
 	if(!shooter->AtGoalSpeed() && shooter->ballReady() || shooter->GetCurrentWantedSpeed() == 0 && shooter->ballReady() && chute->GetTop() != Relay::kReverse)
 		chute->Set(Relay::kOff);
-	if(timeSinceLastShot + RAWCConstants::getInstance()->getValueForKey("shooterDelayMS") >= Timer::GetFPGATimestamp())
+	if(RAWCControlBoard::getInstance()->getDriveButton(3))
 	{
-		//printf("Delaying... %f\n", Timer::GetFPGATimestamp());
-		chute->Set(Relay::kOff);
+		if(timeSinceLastShot + RAWCConstants::getInstance()->getValueForKey("shooterDelayMS") >= Timer::GetFPGATimestamp())
+		{
+			//printf("Delaying... %f\n", Timer::GetFPGATimestamp());
+			chute->Set(Relay::kOff);
+		}
 	}
-	
 	
 	chute->Handle();
 
@@ -186,7 +189,7 @@ void RAWCRobot::handle()
 
 	if (printCount % 10 == 0)
 	{
-		printf("Vel: %d, Gyro: %f\r\n", this->leftDriveEncoder->GetRaw(), gyro->GetAngle());
+	//	printf("Vel: %d, Gyro: %f\r\n", this->leftDriveEncoder->GetRaw(), gyro->GetAngle());
 	}
 
 }

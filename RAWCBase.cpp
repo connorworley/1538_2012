@@ -56,26 +56,21 @@ public:
 		autoController = AutoModeController::getInstance();
 		autoSelector = new AutoModeSelector();
 		autoSelector->increment();
-//		autoSelector->incrementSecondary();
-		
+//		autoSelector->incrementSecondary();	
 		
 		constants = RAWCConstants::getInstance();
 		constants->restoreData();
 		
-		//37 Max
-#define COMP_BOT
-#ifdef COMP_BOT
-		const int zeroPoint = 29;
-#else
-		const int zeroPoint = 34;
-#error
-#endif
-		
 		constants->insertKeyAndValue("shooterDelayMS", 1);
 		
-		constants->insertKeyAndValue("shooterKey", 3800);
+//		constants->insertKeyAndValue("shooterKey", 3820);
+//		constants->insertKeyAndValue("shooterFender", 4150);
+//		constants->insertKeyAndValue("shooterFenderArmDown", 3250);
+		
+		//constants->insertKeyAndValue("shooterKey", 4270);
+		constants->insertKeyAndValue("shooterKey", 4970);
 		constants->insertKeyAndValue("shooterFender", 4800);
-		constants->insertKeyAndValue("shooterFenderArmDown", 3000);
+		constants->insertKeyAndValue("shooterFenderArmDown", 5250);
 
 		
 		constants->save();
@@ -127,9 +122,9 @@ public:
 		//Print it
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
 		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
-//		PrintToLCD::print(true, 3, 1, "D:%2f",constants->getValueForKey("KickerPosShort")*10.0/10 );
-//		PrintToLCD::print(true, 4, 7, "N:%2f",constants->getValueForKey("KickerPosNear")*10.0/10 );
-//		PrintToLCD::print(true, 4, 12, "M:%2f",constants->getValueForKey("KickerPosMiddle")*10.0/10 );
+		PrintToLCD::print(true, 3, 1, "K:%2f", constants->getValueForKey("shooterKey"));
+		PrintToLCD::print(true, 4, 1, "SF:%2f", constants->getValueForKey("shooterFender"));
+		PrintToLCD::print(true, 5, 1, "SFA:%2f", constants->getValueForKey("shooterFenderArmDown") );
 //		PrintToLCD::print(true, 4, 17, "F:%2f", constants->getValueForKey("KickerPosFar")*10.0/10 );
 		PrintToLCD::finalizeUpdate();
 		//sendIOPortData();

@@ -147,7 +147,7 @@ void RAWCConstants::restoreDataFromFile(string fileName)
 			// Convert value string to a number
 			RAWCConstant value;
 			if(from_string<RAWCConstant>(value, valueString, std::dec)){
-				//printf("Got a value %f for key %s\r\n", value, key.c_str());
+				printf("Got a value %f for key %s\r\n", value, key.c_str());
 				data[key] = value;
 			}
 			else

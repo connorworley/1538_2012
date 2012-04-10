@@ -21,6 +21,7 @@
 #include "Shooter.h"
 #include "../Declarations.h"
 #include "../RAWCLib.h"
+#include "../RAWCControlBoard.h"
 
 using namespace RAWCLib;
 
@@ -91,7 +92,7 @@ void Shooter::Handle()
 			lockI = true;
 		}
 		
-		//printf("Wanted: %f, Actual: %f, Output: %f, sensor pos: %f\n", wantedSpeed, (float)encoder->GetRate(), output, sensorPos);
+		printf("Wanted: %f, Actual: %f, Output: %f, sensor pos: %f\n", wantedSpeed, (float)encoder->GetRate(), output, sensorPos);
 	
 		averageAccel = 0;
 	}
@@ -191,7 +192,10 @@ bool Shooter::AtGoalSpeed()
 
 bool Shooter::ballReady()
 {
-	return (irSensor->GetVoltage() < 2.0);
+	if(RAWCControlBoard::getInstance()->getDriveButton(3))
+		return (irSensor->GetVoltage() < 2.0);
+	
+	return false;
 	
 	//printf("IR Sensor: %f\n", irSensor->GetVoltage());
 	//return false;
