@@ -324,15 +324,21 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 		temp_vel = -temp_vel;
 
 	//printf("Velocity: %f, stick: %f\r\n", velocity, temp_vel);
+	
+	if(speed > 0.10 && speed < -0.10)
+		speed = 0;
 	if (turn > 0.10 && turn < -0.10 || (speed == 0 && !quickTurn))
 		turn = 0;
 
 	unscaled_turn = turn;
+	
+	turn = sin(3.14 / 2.0 * 0.9 * turn) / sin(3.14 / 2.0 * 0.9);
+	turn = sin(3.14 / 2.0 * 0.9 * turn) / sin(3.14 / 2.0 * 0.9);
 	//turn = turn * (temp_vel - 0.75);
 
 
 	if (quickTurn)
-		sensitivity = 2;
+		sensitivity = 1.3;
 	else
 		sensitivity = 0.5;
 
@@ -340,6 +346,9 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 	turn = -turn;
 
 	//turn = steeringAngle;
+	
+	if(!quickTurn)
+		turn = turn - (fabs(speed) * 0.2);
 
 	float left_power = LimitMix(speed + turn);
 	float right_power = LimitMix(speed - turn);
