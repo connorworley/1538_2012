@@ -332,15 +332,17 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 
 	unscaled_turn = turn;
 	
-	turn = sin(3.14 / 2.0 * 0.9 * turn) / sin(3.14 / 2.0 * 0.9);
-	turn = sin(3.14 / 2.0 * 0.9 * turn) / sin(3.14 / 2.0 * 0.9);
+	
+	double nonlinearity_wheel = RAWCConstants::getInstance()->getValueForKey("wheelNonLineararity");
+	turn = sin(3.14 / 2.0 * nonlinearity_wheel * turn) / sin(3.14 / 2.0 * nonlinearity_wheel);
+	turn = sin(3.14 / 2.0 * nonlinearity_wheel * turn) / sin(3.14 / 2.0 * nonlinearity_wheel);
 	//turn = turn * (temp_vel - 0.75);
 
 
 	if (quickTurn)
-		sensitivity = 1.3;
+		sensitivity = RAWCConstants::getInstance()->getValueForKey("sensitivityQuickturn");
 	else
-		sensitivity = 0.5;
+		sensitivity = RAWCConstants::getInstance()->getValueForKey("sensitivityWithoutQuickturn");
 
 	turn *= sensitivity;
 	turn = -turn;
@@ -348,7 +350,7 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 	//turn = steeringAngle;
 	
 	if(!quickTurn)
-		turn = turn - (fabs(speed) * 0.2);
+		turn = turn - (fabs(speed) * RAWCConstants::getInstance()->getValueForKey("speedScaling"));
 
 	float left_power = LimitMix(speed + turn);
 	float right_power = LimitMix(speed - turn);
