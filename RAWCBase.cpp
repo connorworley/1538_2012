@@ -67,10 +67,10 @@ public:
 		constants->insertKeyAndValue("shooterFender", 5200);
 		constants->insertKeyAndValue("shooterFenderArmDown", 3400);
 		
-		constants->insertKeyAndValue("wheelNonLineararity", 0.9);
+		constants->insertKeyAndValue("wheelNonLineararity", 0.7);
 		constants->insertKeyAndValue("sensitivityQuickturn", 1.3);
-		constants->insertKeyAndValue("sensitivityWithoutQuickturn", 0.5);
-		constants->insertKeyAndValue("speedScaling", 0.2);
+		constants->insertKeyAndValue("sensitivityWithoutQuickturn", 0.38);
+		constants->insertKeyAndValue("speedScaling", 0.04);
 
 		
 		//wheelNonLineararity
