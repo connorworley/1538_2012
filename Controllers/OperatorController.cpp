@@ -54,35 +54,43 @@ void OperatorController::handle()
 //		constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown") + shooterSpeedOffsetFenderFunnel);
 //
 //		constants->save();
-	} else {
-		if(cb->getOperatorButton(9) &&
-				previousDec != cb->getOperatorButton(9))
+	} 
+	else 
+	{
+		if(cb->getOperatorButton(9) && previousDec != cb->getOperatorButton(9))
 		{
 			if(!bot->getShooter()->GetHoodState())
 			{
 				shooterSpeedOffset -= 200;
-			} else {
+			} 
+			else 
+			{
 				if(!funnelState)
 				{
 					shooterSpeedOffsetFender -= 200;
-				} else {
+				} 
+				else 
+				{
 					shooterSpeedOffsetFenderFunnel -= 200;
 				}
 			}
 		}
 		previousDec = cb->getOperatorButton(9);
 		
-		if(cb->getOperatorButton(10) &&
-				previousInc != cb->getOperatorButton(10))
+		if(cb->getOperatorButton(10) && previousInc != cb->getOperatorButton(10))
 		{
 			if(!bot->getShooter()->GetHoodState())
 			{
 				shooterSpeedOffset += 200;
-			} else {
+			} 
+			else 
+			{
 				if(!funnelState)
 				{
 					shooterSpeedOffsetFender += 200;
-				} else {
+				} 
+				else 
+				{
 					shooterSpeedOffsetFenderFunnel += 200;
 				}
 			}
@@ -90,21 +98,21 @@ void OperatorController::handle()
 		previousInc = cb->getOperatorButton(10);
 	}
 	
-	if(cb->getOperatorButton(1) &&
-			previousFunnel != cb->getOperatorButton(1))
+	if(cb->getOperatorButton(1) && previousFunnel != cb->getOperatorButton(1))
 	{
 		funnelState = !funnelState;
 		bot->getFunnel()->Set(funnelState);
 	}
 	previousFunnel = cb->getOperatorButton(1);
 	
-	if(cb->getOperatorButton(2) &&
-			previousHood != cb->getOperatorButton(2))
+	if(cb->getOperatorButton(2) && previousHood != cb->getOperatorButton(2))
 	{
 		if(bot->getShooter()->GetHoodState())
 		{
 			bot->getShooter()->RetractHood();
-		} else {
+		} 
+		else 
+		{
 			bot->getShooter()->ExtendHood();
 		}
 	}
@@ -124,10 +132,14 @@ void OperatorController::handle()
 					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFender") + shooterSpeedOffsetFender);
 				}
 				else
+				{
 					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFenderArmDown") + shooterSpeedOffsetFenderFunnel);
+				}
 			}
 			
-		} else {
+		} 
+		else 
+		{
 			bot->getShooter()->SetSpeed(0);
 		}
 	//}

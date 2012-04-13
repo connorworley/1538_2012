@@ -350,7 +350,7 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 	//turn = steeringAngle;
 	
 	if(!quickTurn)
-		turn = turn - (fabs(speed) * RAWCConstants::getInstance()->getValueForKey("speedScaling"));
+		turn = turn + (speed * RAWCConstants::getInstance()->getValueForKey("speedScaling"));
 
 	float left_power = LimitMix(speed + turn);
 	float right_power = LimitMix(speed - turn);

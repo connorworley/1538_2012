@@ -68,7 +68,7 @@ public:
 		constants->insertKeyAndValue("shooterFenderArmDown", 3400);
 		
 		constants->insertKeyAndValue("wheelNonLineararity", 0.7);
-		constants->insertKeyAndValue("sensitivityQuickturn", 1.3);
+		constants->insertKeyAndValue("sensitivityQuickturn", 1.12);
 		constants->insertKeyAndValue("sensitivityWithoutQuickturn", 0.38);
 		constants->insertKeyAndValue("speedScaling", 0.04);
 
@@ -131,6 +131,7 @@ public:
 		PrintToLCD::print(true, 3, 1, "K:%2f", constants->getValueForKey("shooterKey"));
 		PrintToLCD::print(true, 4, 1, "SF:%2f", constants->getValueForKey("shooterFender"));
 		PrintToLCD::print(true, 5, 1, "SFA:%2f", constants->getValueForKey("shooterFenderArmDown") );
+		PrintToLCD::print(true, 6, 1, "SHOOTER:%2f", bot->getShooter()->GetCurrentWantedSpeed() );
 //		PrintToLCD::print(true, 4, 17, "F:%2f", constants->getValueForKey("KickerPosFar")*10.0/10 );
 		PrintToLCD::finalizeUpdate();
 		//sendIOPortData();
@@ -140,12 +141,30 @@ public:
 		autoController->handle();
 		bot->handle();
 		
+		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
+		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
+		PrintToLCD::print(true, 3, 1, "K:%2f", constants->getValueForKey("shooterKey"));
+		PrintToLCD::print(true, 4, 1, "SF:%2f", constants->getValueForKey("shooterFender"));
+		PrintToLCD::print(true, 5, 1, "SFA:%2f", constants->getValueForKey("shooterFenderArmDown") );
+		PrintToLCD::print(true, 6, 1, "SHOOTER:%2f", bot->getShooter()->GetCurrentWantedSpeed() );
+//		PrintToLCD::print(true, 4, 17, "F:%2f", constants->getValueForKey("KickerPosFar")*10.0/10 );
+		PrintToLCD::finalizeUpdate();
+		
 		//sendIOPortData();
 	}
 	void TeleopPeriodic(void) {
 		bot->getServer()->handle();
 		opController->handle();
 		bot->handle();
+		
+		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
+		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
+		PrintToLCD::print(true, 3, 1, "K:%2f", constants->getValueForKey("shooterKey"));
+		PrintToLCD::print(true, 4, 1, "SF:%2f", constants->getValueForKey("shooterFender"));
+		PrintToLCD::print(true, 5, 1, "SFA:%2f", constants->getValueForKey("shooterFenderArmDown") );
+		PrintToLCD::print(true, 6, 1, "SHOOTER:%2f", bot->getShooter()->GetCurrentWantedSpeed() );
+//		PrintToLCD::print(true, 4, 17, "F:%2f", constants->getValueForKey("KickerPosFar")*10.0/10 );
+		PrintToLCD::finalizeUpdate();
 		
 		//sendIOPortData();
 	}
