@@ -40,6 +40,8 @@ OperatorController::OperatorController()
 	previousShooter = false;
 	RMPState = false;
 	shooterSpeedOffset = 0;
+	shooterSpeedOffsetFender = 0;
+	shooterSpeedOffsetFenderFunnel = 0;
 	previousInc = false;
 	previousDec = false;
 }
@@ -124,18 +126,18 @@ void OperatorController::handle()
 		{
 			if(!bot->getShooter()->GetHoodState())
 			{
-				bot->getShooter()->SetSpeed(constants->getValueForKey("shooterKey") + shooterSpeedOffset);
+				bot->getShooter()->SetSpeed(static_cast<float>(constants->getValueForKey("shooterKey") + shooterSpeedOffset));
 			}
 			else
 			{
 				if(!funnelState)
 				{
 					//printf("Funnel up!\n");
-					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFender") + shooterSpeedOffsetFender);
+					bot->getShooter()->SetSpeed(static_cast<float>(constants->getValueForKey("shooterFender") + shooterSpeedOffsetFender));
 				}
 				else
 				{
-					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFenderArmDown") + shooterSpeedOffsetFenderFunnel);
+					bot->getShooter()->SetSpeed(static_cast<float>(constants->getValueForKey("shooterFenderArmDown") + shooterSpeedOffsetFenderFunnel));
 				}
 			}
 			

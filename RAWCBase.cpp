@@ -72,13 +72,16 @@ public:
 		constants->insertKeyAndValue("sensitivityWithoutQuickturn", 0.38);
 		constants->insertKeyAndValue("speedScaling", 0.04);
 		
-		constants->insertKeyAndValue("shooterP", 1.73);
-		constants->insertKeyAndValue("shooterI", 0.045);
-		constants->insertKeyAndValue("shooterD", 0.2);
+		constants->insertKeyAndValue("shooterP", 0.6);
+		constants->insertKeyAndValue("shooterI", 0.013);
+		constants->insertKeyAndValue("shooterD", 2.8);
+		constants->insertKeyAndValue("shooterPLimitI", 0.3);
+		constants->insertKeyAndValue("shooterIIncrement", 0.6);
+		
 		
 		constants->insertKeyAndValue("shooterDriveP", 0.09);
-		constants->insertKeyAndValue("shooterUpperBand", 100);
-		constants->insertKeyAndValue("shooterLowerBand", 100);
+		constants->insertKeyAndValue("shooterUpperBand", 50);
+		constants->insertKeyAndValue("shooterLowerBand", 50);
 
 
 		

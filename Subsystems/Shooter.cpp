@@ -65,16 +65,16 @@ void Shooter::Handle()
 	PID_P = wantedSpeed - sensorPos;
 	
 	PID_P /= 1000.0;
-	PID_P *= constants->getValueForKey("shooterP");
 	
 	if(!lockI && PID_P > 0)
 	{
-		if(PID_P > 0.3)
-			totalI += 0.3;
+		if(PID_P > constants->getValueForKey("shooterPLimitI"))
+			totalI += constants->getValueForKey("shooterIIncrement");
 		else
 			totalI += PID_P;
 	}
 	
+	PID_P *= constants->getValueForKey("shooterP");
 	double PID_I = totalI * constants->getValueForKey("shooterI");
 	
 	

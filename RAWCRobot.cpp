@@ -53,9 +53,9 @@ RAWCRobot::RAWCRobot()
 	previousChuteIRState = false;
 	
 	camera = &AxisCamera::GetInstance("10.15.38.11");
-	camera->WriteResolution(AxisCamera::kResolution_320x240);
+	camera->WriteResolution(AxisCamera::kResolution_640x480);
 	camera->WriteColorLevel(81);
-	camera->WriteBrightness(1);
+	camera->WriteBrightness(20);
 	camera->WriteCompression(20);
 	
 
