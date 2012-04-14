@@ -22,6 +22,7 @@
 #define __SHOOTER_H__
 
 #include "WPILib.h"
+#include "../RAWCConstants.h"
 
 class Shooter
 {
@@ -53,6 +54,8 @@ class Shooter
 		
 		bool passedLowerLimit;
 		bool passedLowerLimitLatch;
+		
+		RAWCConstants* constants;
 	
 	public:
 		Shooter(int motorApwm, int motorBpwm, int encoderAchan, int encoderBchan);

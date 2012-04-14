@@ -22,6 +22,7 @@
 #include "../Declarations.h"
 #include "../RAWCLib.h"
 #include "../RAWCControlBoard.h"
+#include "../RAWCConstants.h"
 
 using namespace RAWCLib;
 
@@ -40,6 +41,7 @@ PIDEnabled(true),
 counter(0),
 PID_P(0)
 {
+	constants = RAWCConstants::getInstance();
 	motorA = new Victor(motorApwm);
 	motorB = new Victor(motorBpwm);
 	encoder = new Encoder(encoderAchan, encoderBchan, false, Encoder::k1X);
@@ -65,12 +67,12 @@ void Shooter::Handle()
 		totalI += (PID_P > 0.04) ? 0.04 : PID_P;
 	
 	PID_P /= 1000.0;
-	PID_P *= 3.2;
-	double PID_I = totalI * 0.3000;
+	PID_P *= constants->getValueForKey("shooterP");
+	double PID_I = totalI * constants->getValueForKey("shooterI");
 	
 	
 	double PID_D = previousError - PID_P;
-	PID_D *= 0.94;
+	PID_D *= constants->getValueForKey("shooterD");;
 	
 	previousError = PID_P;
 		
@@ -94,7 +96,7 @@ void Shooter::Handle()
 			lockI = true;
 		}
 		
-		//printf("Wanted: %f, Actual: %f, Output: %f, sensor pos: %f\n", wantedSpeed, (float)encoder->GetRate(), output, sensorPos);
+		printf("Wanted: %f, Actual: %f, Output: %f, sensor pos: %f\n", wantedSpeed, (float)encoder->GetRate(), output, sensorPos);
 	
 		averageAccel = 0;
 	}

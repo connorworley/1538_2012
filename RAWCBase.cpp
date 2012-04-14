@@ -71,6 +71,10 @@ public:
 		constants->insertKeyAndValue("sensitivityQuickturn", 1.12);
 		constants->insertKeyAndValue("sensitivityWithoutQuickturn", 0.38);
 		constants->insertKeyAndValue("speedScaling", 0.04);
+		
+		constants->insertKeyAndValue("shooterP", 3.2);
+		constants->insertKeyAndValue("shooterI", 0.3);
+		constants->insertKeyAndValue("shooterD", 0.94);
 
 		
 		//wheelNonLineararity

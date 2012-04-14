@@ -125,7 +125,6 @@ void OperatorController::handle()
 			if(!bot->getShooter()->GetHoodState())
 			{
 				bot->getShooter()->SetSpeed(constants->getValueForKey("shooterKey") + shooterSpeedOffset);
-				printf("Speed: %f\n", constants->getValueForKey("shooterKey"));
 			}
 			else
 			{
@@ -133,12 +132,10 @@ void OperatorController::handle()
 				{
 					//printf("Funnel up!\n");
 					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFender") + shooterSpeedOffsetFender);
-					printf("Speed: %f\n", constants->getValueForKey("shooterFender"));
 				}
 				else
 				{
 					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFenderArmDown") + shooterSpeedOffsetFenderFunnel);
-					printf("Speed: %f\n", constants->getValueForKey("shooterFenderArmDown"));
 				}
 			}
 			
