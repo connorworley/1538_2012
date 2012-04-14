@@ -48,18 +48,6 @@ public:
 		
 		taskDeleteHookAdd((FUNCPTR)&taskDeleteHook);
 		
-		
-		GetWatchdog().SetEnabled(false);
-	
-		m_dsLCD = DriverStationLCD::GetInstance();
-		
-		bot = RAWCRobot::getInstance();	
-		opController = new OperatorController();
-		autoController = AutoModeController::getInstance();
-		autoSelector = new AutoModeSelector();
-		autoSelector->increment();
-//		autoSelector->incrementSecondary();	
-		
 		constants = RAWCConstants::getInstance();
 		constants->restoreData();
 		
@@ -84,16 +72,24 @@ public:
 		constants->insertKeyAndValue("shooterDriveP", 0.09);
 		constants->insertKeyAndValue("shooterUpperBand", 50);
 		constants->insertKeyAndValue("shooterLowerBand", 50);
-
-
 		
-		//wheelNonLineararity
-		//sensitivityQuickturn
-		//sensitivityWithoutQuickturn
-		//speedScaling
+		constants->insertKeyAndValue("cameraColorLevel", 50);
+		constants->insertKeyAndValue("cameraBrightness", 50);
+		constants->insertKeyAndValue("cameraCompression", 0);
+		constants->insertKeyAndValue("cameraExposurePriority", 1);
+		constants->insertKeyAndValue("cameraMaxFPS", 30);
 		
 		constants->save();
 		
+		GetWatchdog().SetEnabled(false);
+	
+		m_dsLCD = DriverStationLCD::GetInstance();
+		bot = RAWCRobot::getInstance();	
+		opController = new OperatorController();
+		autoController = AutoModeController::getInstance();
+		autoSelector = new AutoModeSelector();
+		autoSelector->increment();
+//		autoSelector->incrementSecondary();	
 	}
 	void RobotInit(void) {	
 	}
