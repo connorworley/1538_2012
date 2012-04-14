@@ -123,17 +123,22 @@ void OperatorController::handle()
 		if(cb->getOperatorButton(4))
 		{
 			if(!bot->getShooter()->GetHoodState())
+			{
 				bot->getShooter()->SetSpeed(constants->getValueForKey("shooterKey") + shooterSpeedOffset);
+				printf("Speed: %f\n", constants->getValueForKey("shooterKey"));
+			}
 			else
 			{
 				if(!funnelState)
 				{
 					//printf("Funnel up!\n");
 					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFender") + shooterSpeedOffsetFender);
+					printf("Speed: %f\n", constants->getValueForKey("shooterFender"));
 				}
 				else
 				{
 					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFenderArmDown") + shooterSpeedOffsetFenderFunnel);
+					printf("Speed: %f\n", constants->getValueForKey("shooterFenderArmDown"));
 				}
 			}
 			
