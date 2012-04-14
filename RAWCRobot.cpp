@@ -46,6 +46,7 @@ RAWCRobot * RAWCRobot::getInstance()
 RAWCRobot::RAWCRobot()
 {
 	server = new RAWCServer(55555);
+	sd = SmartDashboard::GetInstance();
 	
 	ballsShot = 0;
 	timeSinceLastShot = 0;
@@ -194,6 +195,9 @@ void RAWCRobot::handle()
 	{
 		//printf("Vel: %d, Gyro: %f\r\n", this->leftDriveEncoder->GetRaw(), gyro->GetAngle());
 		server->print("Working!\n");
+		char c[80];
+		sprintf((char*)&c, "%d,%d,0,0,0,0", (int)shooter->GetCurrentWantedSpeed(), (int)shooter->GetCurrentSpeed());
+		sd->PutString("shooterData", (char*)&c);
 	}
 
 }

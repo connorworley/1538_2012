@@ -24,6 +24,8 @@
 #include "Vision/RGBImage.h"
 #include "Vision/BinaryImage.h"
 
+#include "SmartDashboard/SmartDashboard.h"
+
 #include "RAWCLib.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/Roller.h"
@@ -85,6 +87,8 @@ class RAWCRobot
 	
 private:
 	RAWCServer* server;
+	
+	SmartDashboard* sd;
 	
 	int ballsShot;
 	
