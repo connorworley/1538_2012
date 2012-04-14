@@ -46,6 +46,8 @@ class RAWCBase : public IterativeRobot
 public:
 	RAWCBase(void)	{
 		
+		taskDeleteHookAdd((FUNCPTR)&taskDeleteHook);
+		
 		
 		GetWatchdog().SetEnabled(false);
 	
@@ -186,7 +188,18 @@ public:
 		//sendIOPortData();
 	}
 	
-	
+	static STATUS taskDeleteHook(WIND_TCB *pTcb)
+	{
+		char* name = taskName(pTcb->rtpId->initTaskId);
+		
+		if(strcmp(name, "FTP Server Connection Thread") == 0)
+		{
+			printf("FTP task deleted! Reloading constants.\n");
+			RAWCConstants::getInstance()->restoreData();
+		}
+		
+		return 0;
+	}
 };
 
 START_ROBOT_CLASS(RAWCBase);

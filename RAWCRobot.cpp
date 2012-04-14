@@ -54,9 +54,9 @@ RAWCRobot::RAWCRobot()
 	
 	camera = &AxisCamera::GetInstance("10.15.38.11");
 	camera->WriteResolution(AxisCamera::kResolution_640x480);
-	camera->WriteColorLevel(81);
-	camera->WriteBrightness(20);
-	camera->WriteCompression(20);
+	camera->WriteColorLevel(50);
+	camera->WriteBrightness(50);
+	camera->WriteCompression(0);
 	
 
 	camera->WriteExposurePriority(1);

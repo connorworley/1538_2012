@@ -32,6 +32,9 @@
 
 #include "server/RAWCServer.h"
 
+#include "taskHookLib.h"
+#include "private/rtpLibP.h"
+
 /// This class provides core robot functionality and encapsulates 
 /// motors, sensors, relays, etc.
 ///
@@ -158,7 +161,6 @@ private:
 	
 	void setLeftMotors(float val);
 	void setRightMotors(float val);
-	
 };
 
 #endif
