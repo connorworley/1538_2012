@@ -63,20 +63,20 @@ public:
 		
 		constants->insertKeyAndValue("shooterDelayMS", 1);
 		
-		constants->insertKeyAndValue("shooterKey", 3800);
-		constants->insertKeyAndValue("shooterFender", 5200);
-		constants->insertKeyAndValue("shooterFenderArmDown", 3400);
+		constants->insertKeyAndValue("shooterKey", 3400);
+		constants->insertKeyAndValue("shooterFender", 4800);
+		constants->insertKeyAndValue("shooterFenderArmDown", 3000);
 		
 		constants->insertKeyAndValue("wheelNonLineararity", 0.7);
 		constants->insertKeyAndValue("sensitivityQuickturn", 1.12);
 		constants->insertKeyAndValue("sensitivityWithoutQuickturn", 0.38);
 		constants->insertKeyAndValue("speedScaling", 0.04);
 		
-		constants->insertKeyAndValue("shooterP", 0.6);
-		constants->insertKeyAndValue("shooterI", 0.013);
-		constants->insertKeyAndValue("shooterD", 4);
-		constants->insertKeyAndValue("shooterPLimitI", 0.3);
-		constants->insertKeyAndValue("shooterIIncrement", 0.65);
+		constants->insertKeyAndValue("shooterP", 1.8);
+		constants->insertKeyAndValue("shooterI", 0.018);
+		constants->insertKeyAndValue("shooterD", 2);
+		constants->insertKeyAndValue("shooterPLimitI", 0.8);
+		constants->insertKeyAndValue("shooterIIncrement", 0.3);
 		
 		
 		constants->insertKeyAndValue("shooterDriveP", 0.09);

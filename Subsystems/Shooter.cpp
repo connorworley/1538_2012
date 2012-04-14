@@ -88,24 +88,24 @@ void Shooter::Handle()
 	
 	SetRaw(output);
 	
+	if((sensorPos > wantedSpeed - 50) && (sensorPos < wantedSpeed + 50))
+		//(averageAccel > -1 && averageAccel < 1))
+	{
+		//printf("\n\nLOCKED I GAIN\n\n\n");
+		lockI = true;
+	}
 
 	
 	static int counter = 0;
-	if(counter % 5 == 0)
-	{
-		
-		averageAccel /= 10;
-		
-		if((sensorPos > wantedSpeed - 50) && (sensorPos < wantedSpeed + 50) &&
-			(averageAccel > -0.3 && averageAccel < 0.3))
-		{
-			//printf("\n\nLOCKED I GAIN\n\n\n");
-			lockI = true;
-		}
-
-		//printf("W: %f, A: %f, O: %f, P: %f, I: %f, D: %f, AC: %f\n", wantedSpeed, (float)encoder->GetRate(), output, PID_P, PID_I, PID_D, averageAccel);
-		averageAccel = 0;
-	}
+//	if(counter % 5 == 0)
+//	{
+//		
+//		averageAccel /= 10;
+//		
+//
+//		//printf("W: %f, A: %f, O: %f, P: %f, I: %f, D: %f, AC: %f\n", wantedSpeed, (float)encoder->GetRate(), output, PID_P, PID_I, PID_D, averageAccel);
+//		averageAccel = 0;
+//	}
 	counter++;
 }
 
@@ -143,8 +143,8 @@ void Shooter::Reset()
 
 void Shooter::SetRaw(float value)
 {
-	if(value < 0)
-		value = 0;
+	//if(value < 0)
+	//	value = 0;
 	this->motorA->Set(value);
 	this->motorB->Set(-value);
 	this->rawValue = value;
@@ -189,17 +189,6 @@ float Shooter::GetCurrentWantedSpeed()
 
 bool Shooter::AtGoalSpeed()
 {
-	//TODO: find a better way to determine
-	
-	
-	//printf("Goal Speed: %f, %f\r\n", PID_P, irSensor->GetVoltage());
-//	if(PID_P > -1.1 && PID_P < 1.1)
-//		printf("At goal speed\r\n");
-//	else
-//		printf("At goal speed\r\n");
-	
-	//printf("IR Sensor: %f\n", irSensor->GetVoltage());
-	//printf("Raw Value: %f\n", this->rawValue);
 	double upperBand = this->wantedSpeed + RAWCConstants::getInstance()->getValueForKey("shooterUpperBand");
 	double lowerBand = this->wantedSpeed - RAWCConstants::getInstance()->getValueForKey("shooterLowerBand");
 	
@@ -212,9 +201,6 @@ bool Shooter::ballReady()
 		return (irSensor->GetVoltage() < 2.0);
 	
 	return false;
-	
-	//printf("IR Sensor: %f\n", irSensor->GetVoltage());
-	//return false;
 }
 
 Shooter::~Shooter()
