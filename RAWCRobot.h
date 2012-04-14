@@ -149,6 +149,9 @@ private:
 	
 	ShifterStates currentShiftState;
 	
+	bool gotAngle;
+	double shooterGyroSetPoint;
+	
 	bool reset;
 	
 	RAWCRobot();

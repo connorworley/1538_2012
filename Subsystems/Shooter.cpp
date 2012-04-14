@@ -45,6 +45,7 @@ PID_P(0)
 	motorA = new Victor(motorApwm);
 	motorB = new Victor(motorBpwm);
 	encoder = new Encoder(encoderAchan, encoderBchan, false, Encoder::k1X);
+	encoder->SetMaxPeriod(1.0);
 	hood = new Solenoid(SHOOTER_SOLENOID_CHAN);
 	
 	irSensor = new AnalogChannel(1);
@@ -63,16 +64,22 @@ void Shooter::Handle()
 	
 	PID_P = wantedSpeed - sensorPos;
 	
-	if(!lockI && PID_P > 0)
-		totalI += (PID_P > 0.04) ? 0.04 : PID_P;
-	
 	PID_P /= 1000.0;
 	PID_P *= constants->getValueForKey("shooterP");
+	
+	if(!lockI && PID_P > 0)
+	{
+		if(PID_P > 0.3)
+			totalI += 0.3;
+		else
+			totalI += PID_P;
+	}
+	
 	double PID_I = totalI * constants->getValueForKey("shooterI");
 	
 	
 	double PID_D = previousError - PID_P;
-	PID_D *= constants->getValueForKey("shooterD");;
+	PID_D *= constants->getValueForKey("shooterD");
 	
 	previousError = PID_P;
 		
@@ -81,23 +88,22 @@ void Shooter::Handle()
 	
 	SetRaw(output);
 	
+
+	
 	static int counter = 0;
-	if(counter % 10 == 0)
+	if(counter % 5 == 0)
 	{
+		
 		averageAccel /= 10;
 		
-		float band = wantedSpeed * (45.0/6900.0) + 5;
-		
-		if(!lockI &&
-				sensorPos > wantedSpeed - band && sensorPos < wantedSpeed + band &&
-				averageAccel > -0.3 && averageAccel < 0.3)
+		if((sensorPos > wantedSpeed - 50) && (sensorPos < wantedSpeed + 50) &&
+			(averageAccel > -0.3 && averageAccel < 0.3))
 		{
 			//printf("\n\nLOCKED I GAIN\n\n\n");
 			lockI = true;
 		}
-		
-		printf("Wanted: %f, Actual: %f, Output: %f, sensor pos: %f\n", wantedSpeed, (float)encoder->GetRate(), output, sensorPos);
-	
+
+		//printf("W: %f, A: %f, O: %f, P: %f, I: %f, D: %f, AC: %f\n", wantedSpeed, (float)encoder->GetRate(), output, PID_P, PID_I, PID_D, averageAccel);
 		averageAccel = 0;
 	}
 	counter++;
@@ -118,8 +124,11 @@ void Shooter::SetAccel(float accel)
 
 void Shooter::SetSpeed(const float speed)
 {
-	lockI = false;
-	totalI = 0;
+	if(this->wantedSpeed != speed)
+	{
+		lockI = false;
+		totalI = 0;
+	}
 	this->wantedSpeed = speed;
 }
 
@@ -191,7 +200,10 @@ bool Shooter::AtGoalSpeed()
 	
 	//printf("IR Sensor: %f\n", irSensor->GetVoltage());
 	//printf("Raw Value: %f\n", this->rawValue);
-	return (this->rawValue > -0.23 && this->rawValue < 0.23);
+	double upperBand = this->wantedSpeed + RAWCConstants::getInstance()->getValueForKey("shooterUpperBand");
+	double lowerBand = this->wantedSpeed - RAWCConstants::getInstance()->getValueForKey("shooterLowerBand");
+	
+	return (this->GetCurrentSpeed() < upperBand && this->GetCurrentSpeed() > lowerBand);
 }
 
 bool Shooter::ballReady()

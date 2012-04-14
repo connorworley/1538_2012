@@ -125,7 +125,8 @@ RAWCRobot::RAWCRobot()
 	wantedRightDrive = 0;
 
 	previousAngle = 0.0;
-
+	shooterGyroSetPoint = 0;
+	gotAngle = false;
 	reset = false;
 
 	// Initially, we are in drive mode
@@ -170,6 +171,8 @@ void RAWCRobot::handle()
 	
 	if(!shooter->AtGoalSpeed() && shooter->ballReady() || shooter->GetCurrentWantedSpeed() == 0 && shooter->ballReady() && chute->GetTop() != Relay::kReverse)
 		chute->Set(Relay::kOff);
+	
+	
 	if(RAWCControlBoard::getInstance()->getDriveButton(3))
 	{
 		if(timeSinceLastShot + RAWCConstants::getInstance()->getValueForKey("shooterDelayMS") >= Timer::GetFPGATimestamp())
@@ -191,14 +194,15 @@ void RAWCRobot::handle()
 	this->velTimer->Reset();
 	previous_encoder = this->leftDriveEncoder->GetRaw();
 
-	if (printCount % 10 == 0)
+	if (printCount % 2 == 0)
 	{
 		//printf("Vel: %d, Gyro: %f\r\n", this->leftDriveEncoder->GetRaw(), gyro->GetAngle());
-		server->print("Working!\n");
-		char c[80];
-		sprintf((char*)&c, "%d,%d,0,0,0,0", (int)shooter->GetCurrentWantedSpeed(), (int)shooter->GetCurrentSpeed());
-		sd->PutString("shooterData", (char*)&c);
+		//server->print("Working!\n");
+
 	}
+	char c[80];
+	sprintf((char*)&c, "%d,%d,0,0,0,0", (int)shooter->GetCurrentWantedSpeed(), (int)shooter->GetCurrentSpeed());
+	sd->PutString("shooterData", (char*)&c);
 
 }
 
@@ -329,9 +333,9 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 
 	//printf("Velocity: %f, stick: %f\r\n", velocity, temp_vel);
 	
-	if(speed > 0.10 && speed < -0.10)
+	if(speed < 0.10 && speed > -0.10)
 		speed = 0;
-	if (turn > 0.10 && turn < -0.10 || (speed == 0 && !quickTurn))
+	if (turn < 0.10 && turn > -0.10 || (speed == 0 && !quickTurn))
 		turn = 0;
 
 	unscaled_turn = turn;
@@ -354,7 +358,36 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 	//turn = steeringAngle;
 	
 	if(!quickTurn)
+	{
 		turn = turn + (speed * RAWCConstants::getInstance()->getValueForKey("speedScaling"));
+	}
+	
+	static int counter = 0;
+	counter++;
+	
+	//if(counter % 10 == 0)
+	//	printf("SPEED: %f, QT: %f, WT: %f\n", speed, quickTurn, (this->getShooter()->GetCurrentWantedSpeed() > 0));
+	if((speed == 0) && (turn == 0) && !quickTurn && (this->getShooter()->GetCurrentWantedSpeed() > 0))
+	{
+		if(!gotAngle)
+		{
+			shooterGyroSetPoint = this->getGyro()->GetAngle();
+			gotAngle = true;
+		}
+			
+		double PV = this->getGyro()->GetAngle();
+		
+		double P = shooterGyroSetPoint - PV;
+		
+		turn = P * RAWCConstants::getInstance()->getValueForKey("shooterDriveP");;
+		
+		if(counter % 10 == 0)
+			printf("SP: %f, PV: %f, P: %f\n", shooterGyroSetPoint, PV, P);
+	}
+	else
+	{
+		gotAngle = false;
+	}
 
 	float left_power = LimitMix(speed + turn);
 	float right_power = LimitMix(speed - turn);

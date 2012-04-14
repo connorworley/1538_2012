@@ -72,9 +72,14 @@ public:
 		constants->insertKeyAndValue("sensitivityWithoutQuickturn", 0.38);
 		constants->insertKeyAndValue("speedScaling", 0.04);
 		
-		constants->insertKeyAndValue("shooterP", 3.2);
-		constants->insertKeyAndValue("shooterI", 0.3);
-		constants->insertKeyAndValue("shooterD", 0.94);
+		constants->insertKeyAndValue("shooterP", 1.73);
+		constants->insertKeyAndValue("shooterI", 0.045);
+		constants->insertKeyAndValue("shooterD", 0.2);
+		
+		constants->insertKeyAndValue("shooterDriveP", 0.09);
+		constants->insertKeyAndValue("shooterUpperBand", 100);
+		constants->insertKeyAndValue("shooterLowerBand", 100);
+
 
 		
 		//wheelNonLineararity
@@ -115,10 +120,10 @@ public:
 	}
 	void AutonomousContinuous(void)	
 	{
-		Wait(0.01);
+		//Wait(0.01);
 	}
 	void TeleopContinuous(void) {
-		Wait(0.01);
+		//Wait(0.01);
 	}
 	void DisabledPeriodic(void)  {
 		bot->getServer()->handle();
@@ -160,6 +165,11 @@ public:
 		bot->getServer()->handle();
 		opController->handle();
 		bot->handle();
+		
+		if( opController->cb->getButtonAutoSelect())
+		{
+			constants->restoreData();
+		}
 		
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
 		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
