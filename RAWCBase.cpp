@@ -74,9 +74,9 @@ public:
 		
 		constants->insertKeyAndValue("shooterP", 0.6);
 		constants->insertKeyAndValue("shooterI", 0.013);
-		constants->insertKeyAndValue("shooterD", 2.8);
+		constants->insertKeyAndValue("shooterD", 4);
 		constants->insertKeyAndValue("shooterPLimitI", 0.3);
-		constants->insertKeyAndValue("shooterIIncrement", 0.6);
+		constants->insertKeyAndValue("shooterIIncrement", 0.65);
 		
 		
 		constants->insertKeyAndValue("shooterDriveP", 0.09);
