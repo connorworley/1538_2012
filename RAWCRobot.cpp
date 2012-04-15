@@ -55,11 +55,11 @@ RAWCRobot::RAWCRobot()
 	camera = &AxisCamera::GetInstance("10.15.38.11");
 	camera->WriteResolution(AxisCamera::kResolution_640x480);
 	
-	camera->WriteColorLevel(RAWCConstants::getInstance()->getValueForKey("cameraColorLevel"));
-	camera->WriteBrightness(RAWCConstants::getInstance()->getValueForKey("cameraBrightness"));
-	camera->WriteCompression(RAWCConstants::getInstance()->getValueForKey("cameraCompression"));
-	camera->WriteExposurePriority(RAWCConstants::getInstance()->getValueForKey("cameraExposurePriority"));
-	camera->WriteMaxFPS(RAWCConstants::getInstance()->getValueForKey("cameraMaxFPS"));
+	camera->WriteColorLevel((int)RAWCConstants::getInstance()->getValueForKey("cameraColorLevel"));
+	camera->WriteBrightness((int)RAWCConstants::getInstance()->getValueForKey("cameraBrightness"));
+	camera->WriteCompression((int)RAWCConstants::getInstance()->getValueForKey("cameraCompression"));
+	camera->WriteExposurePriority((int)RAWCConstants::getInstance()->getValueForKey("cameraExposurePriority"));
+	camera->WriteMaxFPS((int)RAWCConstants::getInstance()->getValueForKey("cameraMaxFPS"));
 
 
 	threshold = new Threshold(90, 155, 147, 255, 55, 201);
