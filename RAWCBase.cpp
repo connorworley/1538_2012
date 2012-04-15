@@ -53,7 +53,7 @@ public:
 		
 		constants->insertKeyAndValue("shooterDelayMS", 1);
 		
-		constants->insertKeyAndValue("shooterKey", 3400);
+		constants->insertKeyAndValue("shooterKey", 3700);
 		constants->insertKeyAndValue("shooterFender", 4800);
 		constants->insertKeyAndValue("shooterFenderArmDown", 3000);
 		

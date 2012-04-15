@@ -366,27 +366,27 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 	
 	//if(counter % 10 == 0)
 	//	printf("SPEED: %f, QT: %f, WT: %f\n", speed, quickTurn, (this->getShooter()->GetCurrentWantedSpeed() > 0));
-	if((speed == 0) && (turn == 0) && !quickTurn && (this->getShooter()->GetCurrentWantedSpeed() > 0))
-	{
-		if(!gotAngle)
-		{
-			shooterGyroSetPoint = this->getGyro()->GetAngle();
-			gotAngle = true;
-		}
-			
-		double PV = this->getGyro()->GetAngle();
-		
-		double P = shooterGyroSetPoint - PV;
-		
-		turn = P * RAWCConstants::getInstance()->getValueForKey("shooterDriveP");;
-		
-		if(counter % 10 == 0)
-			printf("SP: %f, PV: %f, P: %f\n", shooterGyroSetPoint, PV, P);
-	}
-	else
-	{
-		gotAngle = false;
-	}
+//	if((speed == 0) && (turn == 0) && !quickTurn && (this->getShooter()->GetCurrentWantedSpeed() > 0))
+//	{
+//		if(!gotAngle)
+//		{
+//			shooterGyroSetPoint = this->getGyro()->GetAngle();
+//			gotAngle = true;
+//		}
+//			
+//		double PV = this->getGyro()->GetAngle();
+//		
+//		double P = shooterGyroSetPoint - PV;
+//		
+//		turn = P * RAWCConstants::getInstance()->getValueForKey("shooterDriveP");;
+//		
+//		if(counter % 10 == 0)
+//			printf("SP: %f, PV: %f, P: %f\n", shooterGyroSetPoint, PV, P);
+//	}
+//	else
+//	{
+//		gotAngle = false;
+//	}
 
 	float left_power = LimitMix(speed + turn);
 	float right_power = LimitMix(speed - turn);
