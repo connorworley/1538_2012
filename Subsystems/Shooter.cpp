@@ -51,13 +51,15 @@ PID_P(0)
 	irSensor = new AnalogChannel(1);
 	
 	encoder->Start();
+	
+	shooterLowPass = DaisyFilter::SinglePoleIIRFilter(constants->getValueForKey("shooterIIR"));
 }
 
 void Shooter::Handle()
 {
 	//wantedSpeed = 4000;
 	
-	double sensorPos = encoder->GetRate();	
+	double sensorPos = shooterLowPass->Calculate(encoder->GetRate());
 	double delta = sensorPos - previousAccel;
 	averageAccel += delta;
 	previousAccel = sensorPos;

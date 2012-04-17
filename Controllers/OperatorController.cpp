@@ -63,17 +63,20 @@ void OperatorController::handle()
 		{
 			if(!bot->getShooter()->GetHoodState())
 			{
-				shooterSpeedOffset -= 200;
+				constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")-200);
+				//shooterSpeedOffset -= 200;
 			} 
 			else 
 			{
 				if(!funnelState)
 				{
-					shooterSpeedOffsetFender -= 200;
+					constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")-200);
+					//shooterSpeedOffsetFender -= 200;
 				} 
 				else 
 				{
-					shooterSpeedOffsetFenderFunnel -= 200;
+					constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")-200);
+					//shooterSpeedOffsetFenderFunnel -= 200;
 				}
 			}
 		}
@@ -83,17 +86,20 @@ void OperatorController::handle()
 		{
 			if(!bot->getShooter()->GetHoodState())
 			{
-				shooterSpeedOffset += 200;
+				constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")+200);
+				//shooterSpeedOffset += 200;
 			} 
 			else 
 			{
 				if(!funnelState)
 				{
-					shooterSpeedOffsetFender += 200;
+					constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")+200);
+					//shooterSpeedOffsetFender += 200;
 				} 
 				else 
 				{
-					shooterSpeedOffsetFenderFunnel += 200;
+					constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")+200);
+					//shooterSpeedOffsetFenderFunnel += 200;
 				}
 			}
 		}
@@ -126,18 +132,21 @@ void OperatorController::handle()
 		{
 			if(!bot->getShooter()->GetHoodState())
 			{
-				bot->getShooter()->SetSpeed(static_cast<float>(constants->getValueForKey("shooterKey") + shooterSpeedOffset));
+				bot->getShooter()->SetSpeed(constants->getValueForKey("shooterKey"));
+				//bot->getShooter()->SetSpeed(static_cast<float>(constants->getValueForKey("shooterKey") + shooterSpeedOffset));
 			}
 			else
 			{
 				if(!funnelState)
 				{
 					//printf("Funnel up!\n");
-					bot->getShooter()->SetSpeed(static_cast<float>(constants->getValueForKey("shooterFender") + shooterSpeedOffsetFender));
+					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFender"));
+					//bot->getShooter()->SetSpeed(static_cast<float>(constants->getValueForKey("shooterFender") + shooterSpeedOffsetFender));
 				}
 				else
 				{
-					bot->getShooter()->SetSpeed(static_cast<float>(constants->getValueForKey("shooterFenderArmDown") + shooterSpeedOffsetFenderFunnel));
+					bot->getShooter()->SetSpeed(constants->getValueForKey("shooterFenderArm"));
+					//bot->getShooter()->SetSpeed(static_cast<float>(constants->getValueForKey("shooterFenderArmDown") + shooterSpeedOffsetFenderFunnel));
 				}
 			}
 			

@@ -23,6 +23,7 @@
 
 #include "WPILib.h"
 #include "../RAWCConstants.h"
+#include "../DaisyFilter.h"
 
 class Shooter
 {
@@ -56,6 +57,8 @@ class Shooter
 		bool passedLowerLimitLatch;
 		
 		RAWCConstants* constants;
+		
+		DaisyFilter *shooterLowPass;
 	
 	public:
 		Shooter(int motorApwm, int motorBpwm, int encoderAchan, int encoderBchan);

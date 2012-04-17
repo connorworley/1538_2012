@@ -42,11 +42,14 @@ class RAWCBase : public IterativeRobot
 	AutoModeSelector * autoSelector;
 	int autoIndex;
 	RAWCConstants * constants;
+	Timer* fieldTime;
 	
 public:
 	RAWCBase(void)	{
 		
 		taskDeleteHookAdd((FUNCPTR)&taskDeleteHook);
+		
+		fieldTime = new Timer();
 		
 		constants = RAWCConstants::getInstance();
 		constants->restoreData();
@@ -62,11 +65,14 @@ public:
 		constants->insertKeyAndValue("sensitivityWithoutQuickturn", 0.38);
 		constants->insertKeyAndValue("speedScaling", 0.04);
 		
+		constants->insertKeyAndValue("shooterIIR", 0.6);
 		constants->insertKeyAndValue("shooterP", 1.8);
 		constants->insertKeyAndValue("shooterI", 0.018);
 		constants->insertKeyAndValue("shooterD", 2);
 		constants->insertKeyAndValue("shooterPLimitI", 0.8);
 		constants->insertKeyAndValue("shooterIIncrement", 0.3);
+		constants->insertKeyAndValue("shooterFF", 0.3);
+
 		
 		
 		constants->insertKeyAndValue("shooterDriveP", 0.09);
@@ -113,6 +119,7 @@ public:
 	void TeleopInit(void) 
 	{
 		bot->getShooter()->Reset();
+		fieldTime->Start();
 		//bot->getArm()->Reset();
 	}
 	void DisabledContinuous(void) 
@@ -180,6 +187,17 @@ public:
 		PrintToLCD::print(true, 6, 1, "SHOOTER:%2f", bot->getShooter()->GetCurrentWantedSpeed() );
 //		PrintToLCD::print(true, 4, 17, "F:%2f", constants->getValueForKey("KickerPosFar")*10.0/10 );
 		PrintToLCD::finalizeUpdate();
+		
+		static bool wroteOnce = false;
+		if(fieldTime->Get() > 115)
+		{
+			if(!wroteOnce)
+			{
+				constants->saveDataToFile("LAST_MATCH_CONSTANTS.csv");
+				wroteOnce = true;
+			}
+			
+		}
 		
 		//sendIOPortData();
 	}

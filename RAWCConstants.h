@@ -37,10 +37,7 @@ private:
 	static RAWCConstants * singletonInstance;
 	
 	RAWCConstants();
-	//TODO: Add functionality to let this map persist to a file
-	
-	void saveDataToFile(string fileName); // Save to another file
-	
+	//TODO: Add functionality to let this map persist to a file	
 
 	void restoreDataFromFile(string fileName);
 	
@@ -48,6 +45,8 @@ private:
 public:
 	void restoreData(); // from default file
 	void save(); // Save to the default file
+	void saveDataToFile(string fileName); // Save to another file
+
 	// Get the shared object
 	static RAWCConstants * getInstance();
 	
