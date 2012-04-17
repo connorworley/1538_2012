@@ -46,17 +46,17 @@ class RAWCBase : public IterativeRobot
 	
 public:
 	RAWCBase(void)	{
-		
 		taskDeleteHookAdd((FUNCPTR)&taskDeleteHook);
 		
 		fieldTime = new Timer();
-		
+		SetPeriod((1.0/200.0));
+
 		constants = RAWCConstants::getInstance();
 		constants->restoreData();
 		
 		constants->insertKeyAndValue("shooterDelayMS", 1);
 		
-		constants->insertKeyAndValue("shooterKey", 3700);
+		constants->insertKeyAndValue("shooterKey", 3300);
 		constants->insertKeyAndValue("shooterFender", 4800);
 		constants->insertKeyAndValue("shooterFenderArmDown", 3000);
 		
@@ -65,25 +65,28 @@ public:
 		constants->insertKeyAndValue("sensitivityWithoutQuickturn", 0.38);
 		constants->insertKeyAndValue("speedScaling", 0.04);
 		
-		constants->insertKeyAndValue("shooterIIR", 0.6);
-		constants->insertKeyAndValue("shooterP", 1.8);
-		constants->insertKeyAndValue("shooterI", 0.018);
-		constants->insertKeyAndValue("shooterD", 2);
+		constants->insertKeyAndValue("shooterIIR", 0.09);
+		constants->insertKeyAndValue("shooterP", 0.65);
+		constants->insertKeyAndValue("shooterI", 0);
+		constants->insertKeyAndValue("shooterD", 0.8);
 		constants->insertKeyAndValue("shooterPLimitI", 0.8);
 		constants->insertKeyAndValue("shooterIIncrement", 0.3);
-		constants->insertKeyAndValue("shooterFF", 0.3);
+		constants->insertKeyAndValue("shooterFF", 0.7);
+		constants->insertKeyAndValue("bangBang", 0);
+		constants->insertKeyAndValue("shooterIncrement", 50);
 
 		
-		
 		constants->insertKeyAndValue("shooterDriveP", 0.09);
-		constants->insertKeyAndValue("shooterUpperBand", 50);
-		constants->insertKeyAndValue("shooterLowerBand", 50);
+		constants->insertKeyAndValue("shooterUpperBand", 60);
+		constants->insertKeyAndValue("shooterLowerBand", 60);
 		
 		constants->insertKeyAndValue("cameraColorLevel", 50);
 		constants->insertKeyAndValue("cameraBrightness", 50);
 		constants->insertKeyAndValue("cameraCompression", 0);
 		constants->insertKeyAndValue("cameraExposurePriority", 1);
 		constants->insertKeyAndValue("cameraMaxFPS", 30);
+		
+		
 		
 		constants->save();
 		
@@ -177,6 +180,7 @@ public:
 		if( opController->cb->getButtonAutoSelect())
 		{
 			constants->restoreData();
+			bot->getShooter()->ResetIIRGain();
 		}
 		
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");

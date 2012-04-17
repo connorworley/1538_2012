@@ -24,6 +24,8 @@
 #include "WPILib.h"
 #include "../RAWCConstants.h"
 #include "../DaisyFilter.h"
+#include <pthread.h>
+
 
 class Shooter
 {
@@ -59,6 +61,7 @@ class Shooter
 		RAWCConstants* constants;
 		
 		DaisyFilter *shooterLowPass;
+		pthread_mutex_t* mutex;
 	
 	public:
 		Shooter(int motorApwm, int motorBpwm, int encoderAchan, int encoderBchan);
@@ -82,6 +85,8 @@ class Shooter
 		void Reset();
 		
 		bool ballReady();
+		
+		void ResetIIRGain();
 		
 		~Shooter();
 };

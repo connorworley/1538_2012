@@ -63,20 +63,20 @@ void OperatorController::handle()
 		{
 			if(!bot->getShooter()->GetHoodState())
 			{
-				constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")-200);
-				//shooterSpeedOffset -= 200;
+				constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")-constants->getValueForKey("shooterIncrement"));
+				//shooterSpeedOffset -= constants->getValueForKey("shooterIncrement");
 			} 
 			else 
 			{
 				if(!funnelState)
 				{
-					constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")-200);
-					//shooterSpeedOffsetFender -= 200;
+					constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")-constants->getValueForKey("shooterIncrement"));
+					//shooterSpeedOffsetFender -= constants->getValueForKey("shooterIncrement");
 				} 
 				else 
 				{
-					constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")-200);
-					//shooterSpeedOffsetFenderFunnel -= 200;
+					constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")-constants->getValueForKey("shooterIncrement"));
+					//shooterSpeedOffsetFenderFunnel -= constants->getValueForKey("shooterIncrement");
 				}
 			}
 		}
@@ -86,20 +86,20 @@ void OperatorController::handle()
 		{
 			if(!bot->getShooter()->GetHoodState())
 			{
-				constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")+200);
-				//shooterSpeedOffset += 200;
+				constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")+constants->getValueForKey("shooterIncrement"));
+				//shooterSpeedOffset += constants->getValueForKey("shooterIncrement");
 			} 
 			else 
 			{
 				if(!funnelState)
 				{
-					constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")+200);
-					//shooterSpeedOffsetFender += 200;
+					constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")+constants->getValueForKey("shooterIncrement"));
+					//shooterSpeedOffsetFender += constants->getValueForKey("shooterIncrement");
 				} 
 				else 
 				{
-					constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")+200);
-					//shooterSpeedOffsetFenderFunnel += 200;
+					constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")+constants->getValueForKey("shooterIncrement"));
+					//shooterSpeedOffsetFenderFunnel += constants->getValueForKey("shooterIncrement");
 				}
 			}
 		}
