@@ -182,6 +182,7 @@ void OperatorController::handle()
 	
 	if(!cb->getSteeringButton(3))
 	{
+		bot->cameraReset();
 		bot->driveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
 	}
 	else
