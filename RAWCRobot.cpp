@@ -203,11 +203,7 @@ void RAWCRobot::handle()
 
 	if (printCount % 10 == 0)
 	{
-<<<<<<< HEAD
-		//printf("Filt: %f, Gyro: %f\r\n", gyroAngle, gyro->GetAngle());
-=======
 		printf("Filt: %f, Gyro: %f\r\n", gyroAngle, gyro->GetAngle());
->>>>>>> 2bd66df4dd679c37a2664b43448ba9198d2b34be
 		//server->print("Working!\n");
 
 	}

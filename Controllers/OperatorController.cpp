@@ -56,39 +56,13 @@ void OperatorController::handle()
 	{
 		if(!bot->getShooter()->GetHoodState())
 		{
-<<<<<<< HEAD
 			constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")-constants->getValueForKey("shooterIncrement"));
 			//shooterSpeedOffset -= constants->getValueForKey("shooterIncrement");
 		} 
 		else 
-=======
-			if(!bot->getShooter()->GetHoodState())
-			{
-				constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")-constants->getValueForKey("shooterIncrement"));
-				//shooterSpeedOffset -= constants->getValueForKey("shooterIncrement");
-			} 
-			else 
-			{
-				if(!funnelState)
-				{
-					constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")-constants->getValueForKey("shooterIncrement"));
-					//shooterSpeedOffsetFender -= constants->getValueForKey("shooterIncrement");
-				} 
-				else 
-				{
-					constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")-constants->getValueForKey("shooterIncrement"));
-					//shooterSpeedOffsetFenderFunnel -= constants->getValueForKey("shooterIncrement");
-				}
-			}
-		}
-		previousDec = cb->getOperatorButton(9);
-		
-		if(cb->getOperatorButton(10) && previousInc != cb->getOperatorButton(10))
->>>>>>> 2bd66df4dd679c37a2664b43448ba9198d2b34be
 		{
 			if(!funnelState)
 			{
-<<<<<<< HEAD
 				constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")-constants->getValueForKey("shooterIncrement"));
 				//shooterSpeedOffsetFender -= constants->getValueForKey("shooterIncrement");
 			} 
@@ -96,23 +70,6 @@ void OperatorController::handle()
 			{
 				constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")-constants->getValueForKey("shooterIncrement"));
 				//shooterSpeedOffsetFenderFunnel -= constants->getValueForKey("shooterIncrement");
-=======
-				constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")+constants->getValueForKey("shooterIncrement"));
-				//shooterSpeedOffset += constants->getValueForKey("shooterIncrement");
-			} 
-			else 
-			{
-				if(!funnelState)
-				{
-					constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")+constants->getValueForKey("shooterIncrement"));
-					//shooterSpeedOffsetFender += constants->getValueForKey("shooterIncrement");
-				} 
-				else 
-				{
-					constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")+constants->getValueForKey("shooterIncrement"));
-					//shooterSpeedOffsetFenderFunnel += constants->getValueForKey("shooterIncrement");
-				}
->>>>>>> 2bd66df4dd679c37a2664b43448ba9198d2b34be
 			}
 		}
 	}
