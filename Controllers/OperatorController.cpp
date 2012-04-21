@@ -100,18 +100,18 @@ void OperatorController::handle()
 	
 	bot->getFunnel()->Set(!cb->getOperatorButton(4));
 	
-//	if(cb->getOperatorButton(2) && previousHood != cb->getOperatorButton(2))
-//	{
-//		if(bot->getShooter()->GetHoodState())
-//		{
-//			bot->getShooter()->RetractHood();
-//		} 
-//		else 
-//		{
-//			bot->getShooter()->ExtendHood();
-//		}
-//	}
-//	previousHood = cb->getOperatorButton(2);
+	if(cb->getSteeringButton(1) && previousHood != cb->getSteeringButton(1))
+	{
+		if(bot->getShooter()->GetHoodState())
+		{
+			bot->getShooter()->RetractHood();
+		} 
+		else 
+		{
+			bot->getShooter()->ExtendHood();
+		}
+	}
+	previousHood = cb->getSteeringButton(1);
 	
 	//if(previousShooter != cb->getOperatorButton(4))
 	//{

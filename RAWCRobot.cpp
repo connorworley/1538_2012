@@ -176,9 +176,6 @@ void RAWCRobot::handle()
 	
 	previousChuteIRState = shooter->ballReady();
 	
-	if(!shooter->AtGoalSpeed() && shooter->ballReady() || shooter->GetCurrentWantedSpeed() == 0 && shooter->ballReady() && chute->GetTop() != Relay::kReverse)
-		chute->Set(Relay::kOff);
-	
 	
 	if(RAWCControlBoard::getInstance()->getOperatorButton(3))
 	{
@@ -187,6 +184,9 @@ void RAWCRobot::handle()
 			//printf("Delaying... %f\n", Timer::GetFPGATimestamp());
 			chute->Set(Relay::kOff);
 		}
+		
+		if(!shooter->AtGoalSpeed() && shooter->ballReady() && chute->GetTop() != Relay::kReverse)
+			chute->Set(Relay::kReverse);
 	}
 	
 	chute->Handle();
