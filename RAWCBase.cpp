@@ -28,8 +28,12 @@
 #include "RAWCConstants.h"
 
 
+#include <sys/stat.h>
+
 // Uncomment this to make the camera work
 //#define USE_CAMERA
+
+time_t constantsLastModified;
 
 DriverStationLCD *m_dsLCD;
 
@@ -47,6 +51,10 @@ class RAWCBase : public IterativeRobot
 public:
 	RAWCBase(void)	{
 		taskDeleteHookAdd((FUNCPTR)&taskDeleteHook);
+		
+		struct stat data;
+		stat("constants.csv", &data);
+		constantsLastModified = data.st_mtime;
 		
 		fieldTime = new Timer();
 		SetPeriod((1.0/200.0));
@@ -214,8 +222,15 @@ public:
 		
 		if(strcmp(name, "FTP Server Connection Thread") == 0)
 		{
-			printf("FTP task deleted! Reloading constants.\n");
-			RAWCConstants::getInstance()->restoreData();
+			printf("FTP task deleted!\n");
+			struct stat data;
+			stat("constants.csv", &data);
+			if(data.st_mtime != constantsLastModified)
+			{
+				printf("Constants file modified.  Reloading data.\n");
+				RAWCConstants::getInstance()->restoreData();
+				constantsLastModified = data.st_mtime;
+			}
 		}
 		
 		return 0;
