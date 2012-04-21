@@ -53,13 +53,18 @@ PID_P(0)
 	encoder->Start();
 	
 	shooterLowPass = DaisyFilter::SinglePoleIIRFilter(constants->getValueForKey("shooterIIR"));
+	
+	mutex = new pthread_mutex_t;
+	pthread_mutex_init(mutex, NULL);
 }
 
 void Shooter::Handle()
 {
 	//wantedSpeed = 4000;
-	
+	pthread_mutex_lock(mutex);
 	double sensorPos = shooterLowPass->Calculate(encoder->GetRate());
+	pthread_mutex_unlock(mutex);
+
 	double delta = sensorPos - previousAccel;
 	averageAccel += delta;
 	previousAccel = sensorPos;
@@ -78,14 +83,26 @@ void Shooter::Handle()
 	
 	PID_P *= constants->getValueForKey("shooterP");
 	double PID_I = totalI * constants->getValueForKey("shooterI");
-	
-	
 	double PID_D = previousError - PID_P;
 	PID_D *= constants->getValueForKey("shooterD");
 	
 	previousError = PID_P;
+	
+	double feedForward = 0.5 * constants->getValueForKey("shooterFF");
+	
+	if(wantedSpeed < 500)
+		feedForward = 0;
 		
-	float output = VictorLinearize(PID_P + PID_I + PID_D);
+	//float output = VictorLinearize(PID_P + PID_I + PID_D);
+	double bangBang = 0.8 * constants->getValueForKey("bangBang");
+
+	if(sensorPos >= wantedSpeed)
+		bangBang = 0;
+	
+	float output = VictorLinearize(PID_P + PID_I + PID_D + feedForward + bangBang);
+
+	
+	//float output = VictorLinearize(bangBang);
 	output = LimitMix(output);
 	
 	SetRaw(output);
@@ -132,6 +149,14 @@ void Shooter::SetSpeed(const float speed)
 		totalI = 0;
 	}
 	this->wantedSpeed = speed;
+}
+
+void Shooter::ResetIIRGain()
+{
+	pthread_mutex_lock(mutex);
+	delete this->shooterLowPass;
+	shooterLowPass = DaisyFilter::SinglePoleIIRFilter(constants->getValueForKey("shooterIIR"));
+	pthread_mutex_unlock(mutex);
 }
 
 void Shooter::Reset()

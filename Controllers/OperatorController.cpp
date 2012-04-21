@@ -44,91 +44,78 @@ OperatorController::OperatorController()
 	shooterSpeedOffsetFenderFunnel = 0;
 	previousInc = false;
 	previousDec = false;
+	previousIntake = false;
+	previousExhaust = false;
+	intakeState = Relay::kOff;
 }
 
 // call this when you want to update the bot from a driver
 void OperatorController::handle()
 {
-	if(cb->getOperatorButton(9) && cb->getOperatorButton(10))
+	if(cb->getOperatorButton(1) && previousDec != cb->getOperatorButton(1))
 	{
-//		constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey") + shooterSpeedOffset);
-//		constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender") + shooterSpeedOffsetFender);
-//		constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown") + shooterSpeedOffsetFenderFunnel);
-//
-//		constants->save();
-	} 
-	else 
-	{
-		if(cb->getOperatorButton(9) && previousDec != cb->getOperatorButton(9))
+		if(!bot->getShooter()->GetHoodState())
 		{
-			if(!bot->getShooter()->GetHoodState())
-			{
-				constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")-200);
-				//shooterSpeedOffset -= 200;
-			} 
-			else 
-			{
-				if(!funnelState)
-				{
-					constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")-200);
-					//shooterSpeedOffsetFender -= 200;
-				} 
-				else 
-				{
-					constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")-200);
-					//shooterSpeedOffsetFenderFunnel -= 200;
-				}
-			}
-		}
-		previousDec = cb->getOperatorButton(9);
-		
-		if(cb->getOperatorButton(10) && previousInc != cb->getOperatorButton(10))
-		{
-			if(!bot->getShooter()->GetHoodState())
-			{
-				constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")+200);
-				//shooterSpeedOffset += 200;
-			} 
-			else 
-			{
-				if(!funnelState)
-				{
-					constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")+200);
-					//shooterSpeedOffsetFender += 200;
-				} 
-				else 
-				{
-					constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")+200);
-					//shooterSpeedOffsetFenderFunnel += 200;
-				}
-			}
-		}
-		previousInc = cb->getOperatorButton(10);
-	}
-	
-	if(cb->getOperatorButton(1) && previousFunnel != cb->getOperatorButton(1))
-	{
-		funnelState = !funnelState;
-		bot->getFunnel()->Set(funnelState);
-	}
-	previousFunnel = cb->getOperatorButton(1);
-	
-	if(cb->getOperatorButton(2) && previousHood != cb->getOperatorButton(2))
-	{
-		if(bot->getShooter()->GetHoodState())
-		{
-			bot->getShooter()->RetractHood();
+			constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")-constants->getValueForKey("shooterIncrement"));
+			//shooterSpeedOffset -= constants->getValueForKey("shooterIncrement");
 		} 
 		else 
 		{
-			bot->getShooter()->ExtendHood();
+			if(!funnelState)
+			{
+				constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")-constants->getValueForKey("shooterIncrement"));
+				//shooterSpeedOffsetFender -= constants->getValueForKey("shooterIncrement");
+			} 
+			else 
+			{
+				constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")-constants->getValueForKey("shooterIncrement"));
+				//shooterSpeedOffsetFenderFunnel -= constants->getValueForKey("shooterIncrement");
+			}
 		}
 	}
-	previousHood = cb->getOperatorButton(2);
+	previousDec = cb->getOperatorButton(1);
+	
+	if(cb->getOperatorButton(2) && previousInc != cb->getOperatorButton(2))
+	{
+		if(!bot->getShooter()->GetHoodState())
+		{
+			constants->insertKeyAndValue("shooterKey", constants->getValueForKey("shooterKey")+constants->getValueForKey("shooterIncrement"));
+			//shooterSpeedOffset += constants->getValueForKey("shooterIncrement");
+		} 
+		else 
+		{
+			if(!funnelState)
+			{
+				constants->insertKeyAndValue("shooterFender", constants->getValueForKey("shooterFender")+constants->getValueForKey("shooterIncrement"));
+				//shooterSpeedOffsetFender += constants->getValueForKey("shooterIncrement");
+			} 
+			else 
+			{
+				constants->insertKeyAndValue("shooterFenderArmDown", constants->getValueForKey("shooterFenderArmDown")+constants->getValueForKey("shooterIncrement"));
+				//shooterSpeedOffsetFenderFunnel += constants->getValueForKey("shooterIncrement");
+			}
+		}
+	}
+	previousInc = cb->getOperatorButton(2);
+	
+	bot->getFunnel()->Set(!cb->getOperatorButton(4));
+	
+//	if(cb->getOperatorButton(2) && previousHood != cb->getOperatorButton(2))
+//	{
+//		if(bot->getShooter()->GetHoodState())
+//		{
+//			bot->getShooter()->RetractHood();
+//		} 
+//		else 
+//		{
+//			bot->getShooter()->ExtendHood();
+//		}
+//	}
+//	previousHood = cb->getOperatorButton(2);
 	
 	//if(previousShooter != cb->getOperatorButton(4))
 	//{
-		if(cb->getOperatorButton(4))
+		if(!cb->getOperatorButton(10))
 		{
 			if(!bot->getShooter()->GetHoodState())
 			{
@@ -158,21 +145,21 @@ void OperatorController::handle()
 	//}
 	//previousShooter = cb->getOperatorButton(4);
 	
-	if(cb->getButtonRampManipulator())
-	{
-		if(RMPState)
-			RMPState = false;
-		else
-		{
-			RMPState = true;
-		}	
-	}
-	
-	
-	if(RMPState)
-		bot->getRampManip()->Set(true);
-	else
-		bot->getRampManip()->Set(false);
+//	if(cb->getButtonRampManipulator())
+//	{
+//		if(RMPState)
+//			RMPState = false;
+//		else
+//		{
+//			RMPState = true;
+//		}	
+//	}
+//	
+//	
+//	if(RMPState)
+//		bot->getRampManip()->Set(true);
+//	else
+//		bot->getRampManip()->Set(false);
 	
 	// Drive shifting
 	if( cb->getButtonShifter() )
@@ -182,6 +169,7 @@ void OperatorController::handle()
 	
 	if(!cb->getSteeringButton(3))
 	{
+		bot->cameraReset();
 		bot->driveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
 	}
 	else
@@ -191,22 +179,35 @@ void OperatorController::handle()
 	
 	//bot->getShooter()->SetRaw(cb->getOperatorY());
 	
-	//printf("running\n");
+	if(cb->getOperatorButton(8) && !previousIntake)
+	{
+		if(intakeState == Relay::kForward)
+		{
+			intakeState = Relay::kOff;
+		} else {
+			intakeState = Relay::kForward;
+		}
+	}
+	previousIntake = cb->getOperatorButton(8);
+	
+	if(cb->getOperatorButton(9) && !previousExhaust)
+	{
+		if(intakeState == Relay::kReverse)
+		{
+			intakeState = Relay::kOff;
+		} else {
+			intakeState = Relay::kReverse;
+		}
+	}
+	previousExhaust = cb->getOperatorButton(9);
+	
+	bot->getIntake()->Set(intakeState);
+
+	
 	if(cb->getOperatorButton(5))
 	{
-		//printf("okay\n");
-		bot->getIntake()->Set(Relay::kForward);
-	} else if(cb->getOperatorButton(7))
-	{
-		bot->getIntake()->Set(Relay::kReverse);
-	} else {
-		bot->getIntake()->Set(Relay::kOff);
-	}
-	
-	if(cb->getOperatorButton(6))
-	{
 		bot->getChute()->Set(Relay::kForward);
-	} else if(cb->getOperatorButton(8))
+	} else if(cb->getOperatorButton(7))
 	{
 		bot->getChute()->Set(Relay::kReverse);
 	} else {

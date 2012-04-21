@@ -43,6 +43,9 @@ private:
 	bool previousInc;
 	bool previousDec;
 	RAWCConstants* constants;
+	bool previousIntake;
+	bool previousExhaust;
+	Relay::Value intakeState;
 
 public:
 	RAWCControlBoard * cb;

@@ -58,6 +58,10 @@ string AutoModeSelector::description()
 		sprintf(str,"Wait 1s and fire      ");
 		s.assign(str);
 		break;
+	case turnTest:
+		sprintf(str,"Turn test                ");
+		s.assign(str);
+		break;
 	case amAimAndFire3s:
 		sprintf(str,"Wait 3s and fire      ");
 		s.assign(str);
@@ -129,6 +133,8 @@ void AutoModeSelector::writeToAutoModeController(AutoModeController * autoContro
 //		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 1);
 //		autoController->addCommand(CMD_CHUTE, 0, 0, shooterKey, 3);
 		break;
+	case turnTest:
+		autoController->addCommand(CMD_TURN, 0, 90, 0, 0, 0, 0, 0, 3600);
 	case amAimAndFire3s:
 		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
 		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 0, 0, 3);

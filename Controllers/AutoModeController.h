@@ -22,6 +22,7 @@
 #define _AUTO_CONTROLLER_H
 #include "../RAWCRobot.h"
 #include "../RAWCLib.h"
+#include "../RAWCConstants.h"
 
 using namespace RAWCLib;
 

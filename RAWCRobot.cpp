@@ -45,6 +45,7 @@ RAWCRobot * RAWCRobot::getInstance()
 /// Constructor for RAWCRobot
 RAWCRobot::RAWCRobot()
 {
+	gyroAngle = 0;
 	server = new RAWCServer(55555);
 	sd = SmartDashboard::GetInstance();
 	
@@ -62,7 +63,7 @@ RAWCRobot::RAWCRobot()
 	camera->WriteMaxFPS((int)RAWCConstants::getInstance()->getValueForKey("cameraMaxFPS"));
 
 
-	threshold = new Threshold(90, 155, 147, 255, 55, 201);
+	threshold = new Threshold(0, 50, 200, 255, 0, 50);
 
 	// Set up drive motors
 	rightDriveA = new Victor(RIGHT_DRIVE_PWM_A);
@@ -77,7 +78,7 @@ RAWCRobot::RAWCRobot()
 	funnel = new Solenoid(FUNNEL_SOLENOID_CHAN);
 	rampManip = new Solenoid(RAMP_SOLENOID_CHAN);
 	
-
+	cameraP = 0;
 	compressorSignal = new DigitalInput(COMPRESSOR_SWITCH);
 	compressorRelay = new Relay(COMPRESSOR_RELAY, Relay::kForwardOnly);
 
@@ -104,6 +105,8 @@ RAWCRobot::RAWCRobot()
 
 	velTimer = new Timer();
 	velTimer->Start();
+	
+	gyroFiltered = DaisyFilter::SinglePoleIIRFilter(0.2f);
 
 	//pitchGyro = new Gyro(PITCH_GYRO_IN_CHAN);
 	//pitchGyro->SetSensitivity(0.004);
@@ -127,7 +130,11 @@ RAWCRobot::RAWCRobot()
 	shooterGyroSetPoint = 0;
 	gotAngle = false;
 	reset = false;
-
+	
+	cameraPIDEnable = false;
+	cameraInitialAngle = 0;
+	
+	cameraGetNewImage = true;
 	// Initially, we are in drive mode
 	setMode(DRIVE_MODE);
 }
@@ -142,6 +149,7 @@ int RAWCRobot::getBallCount()
 void RAWCRobot::handle()
 {		
 	printCount++;
+	gyroAngle = gyroFiltered->Calculate(gyro->GetAngle());
 
 	// Default drive
 	float tmpLeftMotor = wantedLeftDrive;
@@ -172,7 +180,7 @@ void RAWCRobot::handle()
 		chute->Set(Relay::kOff);
 	
 	
-	if(RAWCControlBoard::getInstance()->getDriveButton(3))
+	if(RAWCControlBoard::getInstance()->getOperatorButton(3))
 	{
 		if(timeSinceLastShot + RAWCConstants::getInstance()->getValueForKey("shooterDelayMS") >= Timer::GetFPGATimestamp())
 		{
@@ -193,33 +201,51 @@ void RAWCRobot::handle()
 	this->velTimer->Reset();
 	previous_encoder = this->leftDriveEncoder->GetRaw();
 
-	if (printCount % 2 == 0)
+	if (printCount % 10 == 0)
 	{
-		//printf("Vel: %d, Gyro: %f\r\n", this->leftDriveEncoder->GetRaw(), gyro->GetAngle());
+		//printf("Filt: %f, Gyro: %f\r\n", gyroAngle, gyro->GetAngle());
 		//server->print("Working!\n");
 
 	}
-	char c[80];
-	sprintf((char*)&c, "%d,%d,0,0,0,0", (int)shooter->GetCurrentWantedSpeed(), (int)shooter->GetCurrentSpeed());
-	sd->PutString("shooterData", (char*)&c);
 
+}
+
+void RAWCRobot::cameraReset()
+{
+	cameraGetNewImage = true;
+	cameraInitialAngle = gyroAngle;
 }
 
 bool RAWCRobot::cameraPID(float y)
 {
-	if (camera->IsFreshImage())
+	if(cameraGetNewImage)
+	{
+		image = camera->GetImage();
+		cameraInitialAngle = gyroAngle;
+		
+		if(camera->IsFreshImage())
+		{
+			cameraGetNewImage = false;
+			printf("Got new image: %f, %d\n", cameraInitialAngle, image);
+		}
+		else
+		{
+			if(image)
+				delete image;
+		}
+	}
+	else
 	{
 		ParticleFilterCriteria2 criteria[] =
 		{
 		{ IMAQ_MT_BOUNDING_RECT_WIDTH, 30, 400, false, false },
 		{ IMAQ_MT_BOUNDING_RECT_HEIGHT, 40, 400, false, false } };
-		ColorImage *image = camera->GetImage();
 		//image->Write("img.jpg");
 		
 		if(image)
 		{
-			BinaryImage *thresholdImage = image->ThresholdHSL(90, 155, 145, 255, 55, 201);
-			//BinaryImage *thresholdImage = image->ThresholdRGB(*threshold); // get just the red target pixels
+			//BinaryImage *thresholdImage = image->ThresholdHSL(90, 155, 145, 255, 55, 201);
+			BinaryImage *thresholdImage = image->ThresholdRGB(*threshold); // get just the red target pixels
 			BinaryImage *bigObjectsImage = thresholdImage->RemoveSmallObjects(false, 1); // remove small objects (noise)
 			BinaryImage *convexHullImage = bigObjectsImage->ConvexHull(false); // fill in partial and full rectangles
 			BinaryImage *filteredImage = convexHullImage->ParticleFilter(criteria, 2); // find the rectangles
@@ -249,16 +275,15 @@ bool RAWCRobot::cameraPID(float y)
 				printf("particle: %d  center_mass_x: %d, center_mass_y: %d, %f, %f\n", i, r0->center_mass_y, r0->center_mass_y, r0->center_mass_x_normalized, r0->center_mass_y_normalized);
 			}
 
-			double PID_P = 0;
+			
 			
 			if(foundTwoTargets)
 			{
-				PID_P = 0 - (xWanted);
+				cameraP = 23.5 * (xWanted);
+				//PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
 				
-				PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
-				
-				this->driveSpeedTurn(y, -PID_P, true);
-				printf("Using two targets\n");
+				//this->driveSpeedTurn(y, -PID_P, true);
+				printf("Using two targets: %f\n", cameraP);
 				//image->Write("unfiltered.jpg");
 				//convexHullImage->Write("img.jpg");
 			}
@@ -267,45 +292,26 @@ bool RAWCRobot::cameraPID(float y)
 				if(sortedReports->size() > 0)
 				{
 					ParticleAnalysisReport *r0 = &(sortedReports->at(sortedReports->size() - 1));
-					PID_P = 0 - r0->center_mass_x_normalized;
+					cameraP = (23.5 * r0->center_mass_x_normalized);
+				
+//				PID_P = RAWCLib::LimitMix(PID_P*0.6, 0.4);
+				//this->driveSpeedTurn(y, -PID_P, true);
+				printf("Using one targets %f\n", cameraP);
 				}
-				PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
-				this->driveSpeedTurn(y, -PID_P, true);
-				printf("Using one targets\n");
 				//image->Write("unfiltered.jpg");
 				//convexHullImage->Write("img.jpg");
 			}
-			
-			
-			// be sure to delete images after using them
-			
-			
+				
 			delete sortedReports;
-			
 			delete filteredImage;
 			delete convexHullImage;
 			delete bigObjectsImage;
 			delete thresholdImage;
 			delete image;
-			Wait(0.001);
-			if(PID_P > -0.03 && PID_P < 0.03)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			printf("Unable to get image\r\n");
 		}
 	}
-	else
-	{
-		printf("Unable to get fresh image\r\n");
-	}
+	
+	printf("PID: %f\n", cameraP);
 	return false;
 }
 

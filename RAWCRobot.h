@@ -35,6 +35,8 @@
 #include "taskHookLib.h"
 #include "private/rtpLibP.h"
 
+#include "DaisyFilter.h"
+
 /// This class provides core robot functionality and encapsulates 
 /// motors, sensors, relays, etc.
 ///
@@ -84,6 +86,7 @@ class RAWCRobot
 	int getBallCount();
 	
 	bool inHighGear();
+	void cameraReset();
 	
 	RAWCServer* getServer();
 
@@ -129,9 +132,16 @@ private:
 	Encoder *rightDriveEncoder;
 
 	AxisCamera *camera;
+	ColorImage *image;
 	
 	Threshold *threshold;
 	RobotModes mode;
+	
+	DaisyFilter* gyroFiltered;
+	float gyroAngle;
+	float cameraP;
+	
+	double cameraInitialAngle;
 	
 	ShifterPositions wantedShifterPosition;
 
@@ -142,7 +152,8 @@ private:
 	float wantedRightDrive;
 	
 	float previousAngle;
-	
+	bool cameraPIDEnable;
+	bool cameraGetNewImage;
 	int printCount;
 	
 	double timeSinceLastShot;

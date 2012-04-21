@@ -185,20 +185,22 @@ void AutoModeController::doNothing()
 
 bool AutoModeController::turnHeading(cmdArg heading)
 {
-	const float pGain = 1.2;
+	float pGain = RAWCConstants::getInstance()->getValueForKey("turnP");
 	
 	float currentHeading = bot->getGyro()->GetAngle();
 	float turn = heading - currentHeading;
-	turn /= 100;
 	
 	bot->getLeftEncoder()->Reset();
 	
 	previousError = turn;
+		
+	float output = (LimitMix(turn) * pGain) + (LimitMix(previousError - turn) * RAWCConstants::getInstance()->getValueForKey("turnD"));
 	
-	//printf("%f\r\n", turn);
-	
-	float output = (LimitMix(turn) * pGain) + (LimitMix(previousError - turn) * 0.3);
 	bot->driveLeftRight(output, -output);
+	
+	char c[80];
+	sprintf((char*)&c, "%d,%d,0,0,0,0", (int)output*100, (int)(previousError-turn));
+	SmartDashboard::GetInstance()->PutString("shooterData", (char*)&c);
 	
 	if((currentHeading < heading + 1 && currentHeading > heading - 1))
 	{
