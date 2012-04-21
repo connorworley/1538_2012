@@ -86,9 +86,12 @@ public:
 		constants->insertKeyAndValue("cameraExposurePriority", 1);
 		constants->insertKeyAndValue("cameraMaxFPS", 30);
 		
+<<<<<<< HEAD
 		constants->insertKeyAndValue("turnP", 0.2);
 		constants->insertKeyAndValue("turnD", 0.03);
 		
+=======
+>>>>>>> 2bd66df4dd679c37a2664b43448ba9198d2b34be
 		
 		
 		constants->save();
