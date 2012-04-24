@@ -179,27 +179,18 @@ void OperatorController::handle()
 	
 	//bot->getShooter()->SetRaw(cb->getOperatorY());
 	
-	if(cb->getOperatorButton(8) && !previousIntake)
-	{
-		if(intakeState == Relay::kForward)
-		{
-			intakeState = Relay::kOff;
-		} else {
-			intakeState = Relay::kForward;
-		}
-	}
-	previousIntake = cb->getOperatorButton(8);
 	
-	if(cb->getOperatorButton(9) && !previousExhaust)
+	intakeState = Relay::kOff;
+	
+	if(cb->getOperatorButton(8))
 	{
-		if(intakeState == Relay::kReverse)
-		{
-			intakeState = Relay::kOff;
-		} else {
-			intakeState = Relay::kReverse;
-		}
+		intakeState = Relay::kForward;
 	}
-	previousExhaust = cb->getOperatorButton(9);
+	
+	if(cb->getOperatorButton(9))
+	{
+		intakeState = Relay::kReverse;
+	}
 	
 	bot->getIntake()->Set(intakeState);
 
