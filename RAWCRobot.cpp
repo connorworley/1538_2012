@@ -205,9 +205,11 @@ void RAWCRobot::handle()
 	{
 		printf("Filt: %f, Gyro: %f\r\n", gyroAngle, gyro->GetAngle());
 		//server->print("Working!\n");
-
 	}
-
+	
+	char c[80];
+	sprintf((char*)&c, "%d,%d,0,0,0,0", (int)shooter->GetCurrentWantedSpeed(), (int)shooter->GetCurrentSpeed());
+	SmartDashboard::GetInstance()->PutString("shooterData", (char*)&c);
 }
 
 void RAWCRobot::cameraReset()

@@ -198,10 +198,6 @@ bool AutoModeController::turnHeading(cmdArg heading)
 	
 	bot->driveLeftRight(output, -output);
 	
-	char c[80];
-	sprintf((char*)&c, "%d,%d,0,0,0,0", (int)output*100, (int)(previousError-turn));
-	SmartDashboard::GetInstance()->PutString("shooterData", (char*)&c);
-	
 	if((currentHeading < heading + 1 && currentHeading > heading - 1))
 	{
 		printf("Done with distance\r\n");
