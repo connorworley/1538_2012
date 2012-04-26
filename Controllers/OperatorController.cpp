@@ -163,6 +163,22 @@ void OperatorController::handle()
 		
 	bot->getRampManip()->Set(!cb->getDriveButton(3));
 	
+	if(!cb->getDriveButton(3))
+	{
+		if(cb->getSteeringButton(4))
+		{
+			if(RMPState)
+				RMPState = false;
+			else
+			{
+				RMPState = true;
+			}	
+		}
+		
+		
+		bot->getRampManip()->Set(RMPState);
+	}
+	
 	// Drive shifting
 	if( cb->getButtonShifter() )
 		bot->askForShift(RAWCRobot::SHIFTER_POS_HIGH);
