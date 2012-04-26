@@ -80,13 +80,15 @@ class Shooter
 		void RetractHood();
 		
 		bool PIDStatus();
-		void PIDOverride();
+		void PIDOverride(bool state);
 		
 		void Reset();
 		
 		bool ballReady();
 		
 		void ResetIIRGain();
+		
+		double sensorPos;
 		
 		~Shooter();
 };

@@ -48,6 +48,8 @@ PID_P(0)
 	encoder->SetMaxPeriod(1.0);
 	hood = new Solenoid(SHOOTER_SOLENOID_CHAN);
 	
+	sensorPos = 0;
+	
 	irSensor = new AnalogChannel(1);
 	
 	encoder->Start();
@@ -62,7 +64,7 @@ void Shooter::Handle()
 {
 	//wantedSpeed = 4000;
 	pthread_mutex_lock(mutex);
-	double sensorPos = shooterLowPass->Calculate(encoder->GetRate());
+	sensorPos = shooterLowPass->Calculate(encoder->GetRate());
 	pthread_mutex_unlock(mutex);
 
 	double delta = sensorPos - previousAccel;
@@ -182,12 +184,9 @@ bool Shooter::PIDStatus()
 	return this->PIDEnabled;
 }
 
-void Shooter::PIDOverride()
+void Shooter::PIDOverride(bool state)
 {
-	if(PIDStatus())
-		this->PIDEnabled = false;
-	else
-		this->PIDEnabled = true;
+	this->PIDEnabled = state;
 }
 
 bool Shooter::GetHoodState()
@@ -224,10 +223,10 @@ bool Shooter::AtGoalSpeed()
 
 bool Shooter::ballReady()
 {
-	if(RAWCControlBoard::getInstance()->getDriveButton(3))
+	//if(RAWCControlBoard::getInstance()->getDriveButton(3))
 		return (irSensor->GetVoltage() < 2.0);
 	
-	return false;
+	//return false;
 }
 
 Shooter::~Shooter()

@@ -160,6 +160,8 @@ void OperatorController::handle()
 //		bot->getRampManip()->Set(true);
 //	else
 //		bot->getRampManip()->Set(false);
+		
+	bot->getRampManip()->Set(!cb->getDriveButton(3));
 	
 	// Drive shifting
 	if( cb->getButtonShifter() )
