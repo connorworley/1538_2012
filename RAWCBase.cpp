@@ -27,6 +27,8 @@
 #include "Autonomous/AutoModeSelector.h"
 #include "RAWCConstants.h"
 
+static bool wroteOnce = false;
+
 
 #include <sys/stat.h>
 
@@ -64,7 +66,7 @@ public:
 		
 		constants->insertKeyAndValue("shooterDelayMS", 1);
 		
-		constants->insertKeyAndValue("shooterKey", 3700);
+		constants->insertKeyAndValue("shooterKey", 3750);
 		constants->insertKeyAndValue("shooterFender", 4800);
 		constants->insertKeyAndValue("shooterFenderArmDown", 3000);
 		
@@ -114,6 +116,17 @@ public:
 	}
 	void DisabledInit(void) {
 		autoController->reset();
+		
+		if(fieldTime->Get() > 115)
+		{
+			if(!wroteOnce)
+			{
+				constants->saveDataToFile("LAST_MATCH_CONSTANTS.csv");
+				wroteOnce = true;
+			}
+			
+		}
+		
 		constants->restoreData();
 	
 		autoIndex = 1;
@@ -203,7 +216,6 @@ public:
 //		PrintToLCD::print(true, 4, 17, "F:%2f", constants->getValueForKey("KickerPosFar")*10.0/10 );
 		PrintToLCD::finalizeUpdate();
 		
-		static bool wroteOnce = false;
 		if(fieldTime->Get() > 115)
 		{
 			if(!wroteOnce)

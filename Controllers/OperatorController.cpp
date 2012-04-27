@@ -161,11 +161,11 @@ void OperatorController::handle()
 //	else
 //		bot->getRampManip()->Set(false);
 		
-	bot->getRampManip()->Set(!cb->getDriveButton(3));
+	//bot->getRampManip()->Set(!cb->getDriveButton(3));
 	
 	if(!cb->getDriveButton(3))
 	{
-		if(cb->getSteeringButton(4))
+		if(cb->getButtonRampManipulator())
 		{
 			if(RMPState)
 				RMPState = false;

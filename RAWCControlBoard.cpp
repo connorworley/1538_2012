@@ -102,7 +102,7 @@ bool RAWCControlBoard::getButtonRampManipulator()
 {
 	// This will latch on a press and only return true once per press
 	// Active Low signal
-	if(operatorPanel->GetRawButton(3))
+	if(getSteeringButton(4))
 	{
 		if(!rampLatch)
 		{
