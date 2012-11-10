@@ -22,11 +22,6 @@
 #include "../CowConstants.h"
 #include <string>
 
-
-// Note:
-// This all sucks.
-// I want to change it
-
 void AutoModeSelector::increment()
 {
 	index++;
