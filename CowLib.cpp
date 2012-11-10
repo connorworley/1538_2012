@@ -1,29 +1,29 @@
 //=============================================================================
-// File: RAWCLib.cpp
+// File: CowLib.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(RAWC)
-// All rights reserved.  RAWC proprietary and confidential.
+// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
+// All rights reserved.  Cow proprietary and confidential.
 //             
-// The party receiving this software directly from RAWC (the "Recipient")
+// The party receiving this software directly from Cow (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// RAWC(the "Agreement").  The software may be used in source code form
+// Cow(the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. RAWC retains all ownership rights in and to
+// the Recipient to its users. Cow retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
 //=============================================================================
 
-#include "RAWCLib.h"
+#include "CowLib.h"
 
 extern DriverStationLCD * m_dsLCD;
 
 
-float RAWCLib::AnalogInScale(float oldx, double center)
+float CowLib::AnalogInScale(float oldx, double center)
 {
 	const double min = 0 - center;
 	const double max = 3.25 - center;
@@ -56,13 +56,13 @@ float RAWCLib::AnalogInScale(float oldx, double center)
 	return x;
 }
 
-void RAWCLib::PrintToLCD::print(bool enabled, int lineNumber, int startChar, const char * text){
+void CowLib::PrintToLCD::print(bool enabled, int lineNumber, int startChar, const char * text){
 	PrintToLCD::print(enabled, lineNumber, startChar, text, 0.0, 0.0);
 }
-void RAWCLib::PrintToLCD::print(bool enabled, int lineNumber, int startChar, const char * text, float var1){
+void CowLib::PrintToLCD::print(bool enabled, int lineNumber, int startChar, const char * text, float var1){
 	PrintToLCD::print(enabled, lineNumber, startChar, text, var1, 0.0);
 }	
-void RAWCLib::PrintToLCD::print(bool enabled, int lineNumber, int startChar, const char * text, float var1, float var2){
+void CowLib::PrintToLCD::print(bool enabled, int lineNumber, int startChar, const char * text, float var1, float var2){
 	if(!enabled)
 		return;
 	switch(lineNumber){
@@ -86,12 +86,12 @@ void RAWCLib::PrintToLCD::print(bool enabled, int lineNumber, int startChar, con
 			break;
 	}
 }
-void RAWCLib::PrintToLCD::finalizeUpdate(){
+void CowLib::PrintToLCD::finalizeUpdate(){
 		m_dsLCD->UpdateLCD();
 		
 }
 
-float RAWCLib::LimitMix(float value, float maxValue)
+float CowLib::LimitMix(float value, float maxValue)
 {
 	float limited_value = 0;
 	
@@ -111,7 +111,7 @@ float RAWCLib::LimitMix(float value, float maxValue)
 	return limited_value;
 }
 
-float RAWCLib::LimitMix(float value)
+float CowLib::LimitMix(float value)
 {
 	float limited_value = 0;
 	
@@ -131,7 +131,7 @@ float RAWCLib::LimitMix(float value)
 	return limited_value;
 }
 
-float RAWCLib::VictorLinearize(double goal_speed)
+float CowLib::VictorLinearize(double goal_speed)
 {
 	const double deadband_value = 0.082;
 	if (goal_speed > deadband_value)

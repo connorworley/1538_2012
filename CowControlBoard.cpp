@@ -1,39 +1,39 @@
 //=============================================================================
-// File: RAWCControlBoard.cpp
+// File: CowControlBoard.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(RAWC)
-// All rights reserved.  RAWC proprietary and confidential.
+// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
+// All rights reserved.  Cow proprietary and confidential.
 //             
-// The party receiving this software directly from RAWC (the "Recipient")
+// The party receiving this software directly from Cow (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// RAWC(the "Agreement").  The software may be used in source code form
+// Cow(the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. RAWC retains all ownership rights in and to
+// the Recipient to its users. Cow retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
 //=============================================================================
-#include "RAWCControlBoard.h"
+#include "CowControlBoard.h"
 #include "WPILib.h"
-#include "RAWCRobot.h"
+#include "CowRobot.h"
 
 // Initialize the Singleton instance
-RAWCControlBoard* RAWCControlBoard::singletonInstance = NULL;
+CowControlBoard* CowControlBoard::singletonInstance = NULL;
 
 /// Creates (if needed) and returns a singleton Control Board instance
-RAWCControlBoard* RAWCControlBoard::getInstance()
+CowControlBoard* CowControlBoard::getInstance()
 {
 	if( singletonInstance == NULL)
-		singletonInstance = new RAWCControlBoard(); 
+		singletonInstance = new CowControlBoard(); 
 	return singletonInstance;
 }
 
-/// Constructor for RAWC Control Board
-RAWCControlBoard::RAWCControlBoard()
+/// Constructor for Cow Control Board
+CowControlBoard::CowControlBoard()
 {
 	ds = & DriverStation::GetInstance()->GetEnhancedIO();
 	driveStick = new Joystick(1);
@@ -48,40 +48,40 @@ RAWCControlBoard::RAWCControlBoard()
 /*/// Returns the unscaled throttle joystick value
 /// @return Unscaled Throttle Value
 ///
-double RAWCControlBoard::getRawThrottle(){
+double CowControlBoard::getRawThrottle(){
 	return ds->GetAnalogIn(THROTTLE_CHAN);
 }
 
 /// Returns the unscaled wheel joystick value
 /// @return Unscaled Wheel Value
 ///
-double RAWCControlBoard::getRawWheel(){
+double CowControlBoard::getRawWheel(){
 	return ds->GetAnalogIn(WHEEL_CHAN);
 }
 */
 /*/// Returns the scaled (-1.0 to 1.0) throttle joystick value
 /// @return Scaled Throttle Value
 ///
-float RAWCControlBoard::getThrottle(){
-	return RAWCLib::AnalogInScale(getRawThrottle(), THROTTLE_CENTER_VALUE);
+float CowControlBoard::getThrottle(){
+	return CowLib::AnalogInScale(getRawThrottle(), THROTTLE_CENTER_VALUE);
 }
 
 /// Returns the scaled (-1.0 to 1.0) wheel joystick value
 /// @return Scaled Wheel Value
 ///
-float RAWCControlBoard::getWheel(){
-	return RAWCLib::AnalogInScale(getRawWheel(), WHEEL_CENTER_VALUE);
+float CowControlBoard::getWheel(){
+	return CowLib::AnalogInScale(getRawWheel(), WHEEL_CENTER_VALUE);
 }
 */
 
 /// Returns state of shifter switch
-bool RAWCControlBoard::getButtonShifter()
+bool CowControlBoard::getButtonShifter()
 {
 	return getDriveButton(SHIFTER_BUTTON);
 }
 
 /// Returns state of autonomous select button
-bool RAWCControlBoard::getButtonAutoSelect()
+bool CowControlBoard::getButtonAutoSelect()
 {
 	// This will latch on a press and only return true once per press
 	// Active Low signal
@@ -98,7 +98,7 @@ bool RAWCControlBoard::getButtonAutoSelect()
 	return false;
 }
 
-bool RAWCControlBoard::getButtonRampManipulator()
+bool CowControlBoard::getButtonRampManipulator()
 {
 	// This will latch on a press and only return true once per press
 	// Active Low signal
@@ -115,7 +115,7 @@ bool RAWCControlBoard::getButtonRampManipulator()
 	return false;
 }
 
-bool RAWCControlBoard::getButtonAlign()
+bool CowControlBoard::getButtonAlign()
 {
 	// This will latch on a press and only return true once per press
 	// Active Low signal
@@ -132,7 +132,7 @@ bool RAWCControlBoard::getButtonAlign()
 	return false;
 }
 
-bool RAWCControlBoard::getButtonTelescope()
+bool CowControlBoard::getButtonTelescope()
 {
 	// This will latch on a press and only return true once per press
 	// Active Low signal
@@ -150,47 +150,47 @@ bool RAWCControlBoard::getButtonTelescope()
 }
 
 /// Returns the state of the quick turn
-bool RAWCControlBoard::getQuickTurn()
+bool CowControlBoard::getQuickTurn()
 {
 	return !getDriveButton(8);
 }
 
-float RAWCControlBoard::getDriveStickY()
+float CowControlBoard::getDriveStickY()
 {
 	return driveStick->GetRawAxis(LEFT_GAMEPAD_Y);
 }
 
-float RAWCControlBoard::getSteeringX()
+float CowControlBoard::getSteeringX()
 {
 	return steeringWheel->GetRawAxis(STEERING_X);
 }
 
-float RAWCControlBoard::getOperatorY()
+float CowControlBoard::getOperatorY()
 {
 	return operatorPanel->GetRawAxis(LEFT_GAMEPAD_Y);
 }
 
-float RAWCControlBoard::getOperatorDpadX()
+float CowControlBoard::getOperatorDpadX()
 {
 	return operatorPanel->GetRawAxis(5);
 }
 
-float RAWCControlBoard::getOperatorDpadY()
+float CowControlBoard::getOperatorDpadY()
 {
 	return operatorPanel->GetRawAxis(6);
 }
 
-bool RAWCControlBoard::getDriveButton(const int button)
+bool CowControlBoard::getDriveButton(const int button)
 {
 	return driveStick->GetRawButton(button);
 }
 
-bool RAWCControlBoard::getOperatorButton(const int button)
+bool CowControlBoard::getOperatorButton(const int button)
 {
 	return operatorPanel->GetRawButton(button);
 }
 
-bool RAWCControlBoard::getSteeringButton(const int button)
+bool CowControlBoard::getSteeringButton(const int button)
 {
 	return steeringWheel->GetRawButton(button);
 }

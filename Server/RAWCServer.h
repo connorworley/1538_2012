@@ -12,10 +12,10 @@
 #include <unistd.h>
 #include <stdarg.h>
 
-class RAWCServer {
+class CowServer {
 public:
-    RAWCServer(unsigned int port);
-    ~RAWCServer();
+    CowServer(unsigned int port);
+    ~CowServer();
     void handle();
 
     void print(char* format, ...);
@@ -36,11 +36,11 @@ private:
     int count;
     int fd;
     static void* handleConnection(void* arg);
-    std::vector<RAWCServer::Stack*> stacks;
+    std::vector<CowServer::Stack*> stacks;
 };
 
 typedef struct threadArgs {
 	int client;
-	RAWCServer::Stack* stack;
-	std::vector<RAWCServer::Stack*>* stacks;
+	CowServer::Stack* stack;
+	std::vector<CowServer::Stack*>* stacks;
 } threadArgs;

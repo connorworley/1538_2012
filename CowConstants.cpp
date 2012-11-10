@@ -1,24 +1,24 @@
 //=============================================================================
-// File: RAWCConstants.cpp
+// File: CowConstants.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(RAWC)
-// All rights reserved.  RAWC proprietary and confidential.
+// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
+// All rights reserved.  Cow proprietary and confidential.
 //             
-// The party receiving this software directly from RAWC (the "Recipient")
+// The party receiving this software directly from Cow (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// RAWC(the "Agreement").  The software may be used in source code form
+// Cow(the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. RAWC retains all ownership rights in and to
+// the Recipient to its users. Cow retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
 //=============================================================================
 
-#include "RAWCConstants.h"
+#include "CowConstants.h"
 #include "WPILib.h"
 #include "nivision.h"
 #include <iostream>
@@ -29,7 +29,7 @@
 IMAQ_FUNC int Priv_SetWriteFileAllowed(UINT32 enable); 
 
 // Singleton instance
-RAWCConstants *  RAWCConstants::singletonInstance = NULL;
+CowConstants *  CowConstants::singletonInstance = NULL;
 
 // Helper function for converting a string to a float
 template <class T>
@@ -42,13 +42,13 @@ bool from_string(T& t,
 }
 
 
-/// This static method returns a shared instance of RAWCConstants
-/// @return The shared instance of RAWCConstants
-RAWCConstants * RAWCConstants::getInstance()
+/// This static method returns a shared instance of CowConstants
+/// @return The shared instance of CowConstants
+CowConstants * CowConstants::getInstance()
 {
 	if(singletonInstance == NULL)
 	{
-		singletonInstance = new RAWCConstants();
+		singletonInstance = new CowConstants();
 		// We need this to write to files
 		Priv_SetWriteFileAllowed(1);
 	}
@@ -56,13 +56,13 @@ RAWCConstants * RAWCConstants::getInstance()
 }
 
 /// Constructor
-RAWCConstants::RAWCConstants()
+CowConstants::CowConstants()
 {
 	restoreData();
 }
 
 /// Returns a bool indicating if the key/value pair exists 
-bool RAWCConstants::doesKeyExist(string key)
+bool CowConstants::doesKeyExist(string key)
 {
 	return (bool) data.count(key);
 }
@@ -70,36 +70,36 @@ bool RAWCConstants::doesKeyExist(string key)
 /// Returns the stored value for a string key
 /// @param key
 /// @return Stored Value
-RAWCConstants::RAWCConstant RAWCConstants::getValueForKey(string key)
+CowConstants::CowConstant CowConstants::getValueForKey(string key)
 {
 	if( doesKeyExist(key) )
 	{
 		return data[key];
 	}
 	else 
-		return RAWC_CONSTANTS_DEFAULT_RET_VAL;
+		return Cow_CONSTANTS_DEFAULT_RET_VAL;
 }
 
 /// Insert a value into the constant storage system
 /// @param key String key
-/// @param value RAWCConstant value
-void RAWCConstants::insertKeyAndValue(string key, RAWCConstant value)
+/// @param value CowConstant value
+void CowConstants::insertKeyAndValue(string key, CowConstant value)
 {
 	data[key] = value;
 }
 
 /// Save data to the default file
-void RAWCConstants::save()
+void CowConstants::save()
 {
-	saveDataToFile(RAWC_CONSTANTS_DEFAULT_FILE);
+	saveDataToFile(Cow_CONSTANTS_DEFAULT_FILE);
 }
 
 /// Save data to a file
 /// @param fileName File to save to
-void RAWCConstants::saveDataToFile(string fileName)
+void CowConstants::saveDataToFile(string fileName)
 {
 	Priv_SetWriteFileAllowed(1);
-	map<string, RAWCConstant>::iterator it; //Iterator for map
+	map<string, CowConstant>::iterator it; //Iterator for map
 	
 	//Open a file
 	ofstream outfile;
@@ -116,19 +116,19 @@ void RAWCConstants::saveDataToFile(string fileName)
 }
 
 /// Restores constant system data from the default file
-void RAWCConstants::restoreData()
+void CowConstants::restoreData()
 {
-	restoreDataFromFile(RAWC_CONSTANTS_DEFAULT_FILE);
+	restoreDataFromFile(Cow_CONSTANTS_DEFAULT_FILE);
 }
 
 /// Restores constant system data from a file
 /// @param fileName File to read from
-void RAWCConstants::restoreDataFromFile(string fileName)
+void CowConstants::restoreDataFromFile(string fileName)
 {
 	string key;
 	string valueString;
 	
-	ifstream infile ( RAWC_CONSTANTS_DEFAULT_FILE );
+	ifstream infile ( Cow_CONSTANTS_DEFAULT_FILE );
 	//printf("In restore\r\n ");
 	if (infile.is_open())
 	{	
@@ -145,8 +145,8 @@ void RAWCConstants::restoreDataFromFile(string fileName)
 				break;
 			
 			// Convert value string to a number
-			RAWCConstant value;
-			if(from_string<RAWCConstant>(value, valueString, std::dec))
+			CowConstant value;
+			if(from_string<CowConstant>(value, valueString, std::dec))
 			{
 				printf("%s: %f\n", key.c_str(), value);
 				data[key] = value;

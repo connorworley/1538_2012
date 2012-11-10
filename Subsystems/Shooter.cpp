@@ -1,18 +1,18 @@
 //=============================================================================
 // File: Shooter.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(RAWC)
-// All rights reserved.  RAWC proprietary and confidential.
+// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
+// All rights reserved.  Cow proprietary and confidential.
 //             
-// The party receiving this software directly from RAWC (the "Recipient")
+// The party receiving this software directly from Cow (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// RAWC(the "Agreement").  The software may be used in source code form
+// Cow(the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. RAWC retains all ownership rights in and to
+// the Recipient to its users. Cow retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
@@ -20,11 +20,11 @@
 
 #include "Shooter.h"
 #include "../Declarations.h"
-#include "../RAWCLib.h"
-#include "../RAWCControlBoard.h"
-#include "../RAWCConstants.h"
+#include "../CowLib.h"
+#include "../CowControlBoard.h"
+#include "../CowConstants.h"
 
-using namespace RAWCLib;
+using namespace CowLib;
 
 Shooter::Shooter(int motorApwm, int motorBpwm, int encoderAchan, int encoderBchan)
 :
@@ -41,7 +41,7 @@ PIDEnabled(true),
 counter(0),
 PID_P(0)
 {
-	constants = RAWCConstants::getInstance();
+	constants = CowConstants::getInstance();
 	motorA = new Victor(motorApwm);
 	motorB = new Victor(motorBpwm);
 	encoder = new Encoder(encoderAchan, encoderBchan, false, Encoder::k1X);
@@ -215,15 +215,15 @@ float Shooter::GetCurrentWantedSpeed()
 
 bool Shooter::AtGoalSpeed()
 {
-	double upperBand = this->wantedSpeed + RAWCConstants::getInstance()->getValueForKey("shooterUpperBand");
-	double lowerBand = this->wantedSpeed - RAWCConstants::getInstance()->getValueForKey("shooterLowerBand");
+	double upperBand = this->wantedSpeed + CowConstants::getInstance()->getValueForKey("shooterUpperBand");
+	double lowerBand = this->wantedSpeed - CowConstants::getInstance()->getValueForKey("shooterLowerBand");
 	
 	return (this->GetCurrentSpeed() < upperBand && this->GetCurrentSpeed() > lowerBand);
 }
 
 bool Shooter::ballReady()
 {
-	//if(RAWCControlBoard::getInstance()->getDriveButton(3))
+	//if(CowControlBoard::getInstance()->getDriveButton(3))
 		return (irSensor->GetVoltage() < 2.0);
 	
 	//return false;

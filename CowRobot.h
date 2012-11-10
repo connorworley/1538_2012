@@ -1,20 +1,20 @@
-#ifndef _RAWC_ROBOT_H
-#define _RAWC_ROBOT_H
+#ifndef _Cow_ROBOT_H
+#define _Cow_ROBOT_H
 //=============================================================================
-// File: RAWCRobot.h
+// File: CowRobot.h
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(RAWC)
-// All rights reserved.  RAWC proprietary and confidential.
+// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
+// All rights reserved.  Cow proprietary and confidential.
 //             
-// The party receiving this software directly from RAWC (the "Recipient")
+// The party receiving this software directly from Cow (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// RAWC(the "Agreement").  The software may be used in source code form
+// Cow(the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. RAWC retains all ownership rights in and to
+// the Recipient to its users. Cow retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
@@ -26,11 +26,11 @@
 
 #include "SmartDashboard/SmartDashboard.h"
 
-#include "RAWCLib.h"
+#include "CowLib.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/Roller.h"
 
-#include "server/RAWCServer.h"
+#include "server/CowServer.h"
 
 #include "taskHookLib.h"
 #include "private/rtpLibP.h"
@@ -40,10 +40,10 @@
 /// This class provides core robot functionality and encapsulates 
 /// motors, sensors, relays, etc.
 ///
-class RAWCRobot
+class CowRobot
 {
 	public: 
-	static RAWCRobot * singletonInstance;
+	static CowRobot * singletonInstance;
 	
 	enum ShifterPositions{
 		SHIFTER_POS_LOW = 0,
@@ -59,7 +59,7 @@ class RAWCRobot
 		SHIFTER_STATE_LOW
 	};
 	
-	static RAWCRobot* getInstance();
+	static CowRobot* getInstance();
 	
 	void driveSpeedTurn(float speed, float turn, bool quickTurn);
 	void driveLeftRight(float leftDriveValue, float rightDriveValue);
@@ -88,11 +88,11 @@ class RAWCRobot
 	bool inHighGear();
 	void cameraReset();
 	
-	RAWCServer* getServer();
+	CowServer* getServer();
 
 	
 private:
-	RAWCServer* server;
+	CowServer* server;
 	
 	SmartDashboard* sd;
 	
@@ -168,7 +168,7 @@ private:
 	
 	bool reset;
 	
-	RAWCRobot();
+	CowRobot();
 	
 	void setLeftMotors(float val);
 	void setRightMotors(float val);

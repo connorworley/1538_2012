@@ -1,26 +1,26 @@
 //=============================================================================
 // File: AutoModeController.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(RAWC)
-// All rights reserved.  RAWC proprietary and confidential.
+// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
+// All rights reserved.  Cow proprietary and confidential.
 //             
-// The party receiving this software directly from RAWC (the "Recipient")
+// The party receiving this software directly from Cow (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// RAWC(the "Agreement").  The software may be used in source code form
+// Cow(the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. RAWC retains all ownership rights in and to
+// the Recipient to its users. Cow retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
 //=============================================================================
 
 #include "AutoModeController.h"
-#include "../RAWCRobot.h"
-#include "../RAWCConstants.h"
+#include "../CowRobot.h"
+#include "../CowConstants.h"
 #include "../accelFilter.h"
 #include <math.h>
 
@@ -38,7 +38,7 @@ AutoModeController::AutoModeController()
 :
 	previousError(0)
 {
-	bot = RAWCRobot::getInstance();
+	bot = CowRobot::getInstance();
 	timer = new Timer();
 	curCmd = cmdNULL;
 	
@@ -81,7 +81,7 @@ void AutoModeController::addCommand(RobotCommandNames_e cmd,
 
 void AutoModeController::reset()
 {
-	//RAWCConstants * rc = RAWCConstants::getInstance();
+	//CowConstants * rc = CowConstants::getInstance();
 	bot->getGyro()->Reset();
 	bot->getLeftEncoder()->Reset();
 	bot->getFunnel()->Set(false);
@@ -90,7 +90,7 @@ void AutoModeController::reset()
 	bot->getChute()->Set(Relay::kOff);
 	cmdList.clear();
 	curCmd = cmdNULL;
-	bot->askForShift(RAWCRobot::SHIFTER_POS_HIGH);
+	bot->askForShift(CowRobot::SHIFTER_POS_HIGH);
 }
 
 bool AutoModeController::handle()
@@ -124,7 +124,7 @@ bool AutoModeController::handle()
 			break;
 		case CMD_TURN:
 			result = turnHeading(curCmd.heading);
-			bot->askForShift(RAWCRobot::SHIFTER_POS_LOW);
+			bot->askForShift(CowRobot::SHIFTER_POS_LOW);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
 			bot->getFunnel()->Set(curCmd.arm);
 			bot->getIntake()->Set(toRelayValue(curCmd.intake));
@@ -142,7 +142,7 @@ bool AutoModeController::handle()
 		case CMD_WAIT:
 			doNothing();
 			
-			bot->askForShift(RAWCRobot::SHIFTER_POS_LOW);
+			bot->askForShift(CowRobot::SHIFTER_POS_LOW);
 			bot->getShooter()->SetSpeed(curCmd.shooter);
 			bot->getFunnel()->Set(curCmd.arm);
 			bot->getIntake()->Set(toRelayValue(curCmd.intake));
@@ -185,7 +185,7 @@ void AutoModeController::doNothing()
 
 bool AutoModeController::turnHeading(cmdArg heading)
 {
-	float pGain = RAWCConstants::getInstance()->getValueForKey("turnP");
+	float pGain = CowConstants::getInstance()->getValueForKey("turnP");
 	
 	float currentHeading = bot->getGyro()->GetAngle();
 	float turn = heading - currentHeading;
@@ -194,7 +194,7 @@ bool AutoModeController::turnHeading(cmdArg heading)
 	
 	previousError = turn;
 		
-	float output = (LimitMix(turn) * pGain) + (LimitMix(previousError - turn) * RAWCConstants::getInstance()->getValueForKey("turnD"));
+	float output = (LimitMix(turn) * pGain) + (LimitMix(previousError - turn) * CowConstants::getInstance()->getValueForKey("turnD"));
 	
 	bot->driveLeftRight(output, -output);
 	

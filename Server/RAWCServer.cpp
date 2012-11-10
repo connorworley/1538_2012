@@ -1,6 +1,6 @@
-#include "RAWCServer.h"
+#include "CowServer.h"
 
-RAWCServer::RAWCServer(unsigned int port)
+CowServer::CowServer(unsigned int port)
 {
     count = 0;
     fd = 0;
@@ -37,17 +37,17 @@ RAWCServer::RAWCServer(unsigned int port)
     printf("Successfully started server on port %d\n", port);
 }
 
-RAWCServer::~RAWCServer()
+CowServer::~CowServer()
 {
 
 }
 
-void* RAWCServer::handleConnection(void* arg)
+void* CowServer::handleConnection(void* arg)
 {
 	printf("Handler thread started\n");
 	int client = ((threadArgs*)arg)->client;
 	Stack* stack = ((threadArgs*)arg)->stack;
-	std::vector<RAWCServer::Stack*>* stacks = ((threadArgs*)arg)->stacks;
+	std::vector<CowServer::Stack*>* stacks = ((threadArgs*)arg)->stacks;
 
 	while(true)
 	{
@@ -62,7 +62,7 @@ void* RAWCServer::handleConnection(void* arg)
 				int result = send(client, &c, 1, 0);
 				if(result == -1)
 				{
-					for(std::vector<RAWCServer::Stack*>::iterator it = stacks->begin(); it != stacks->end(); it++)
+					for(std::vector<CowServer::Stack*>::iterator it = stacks->begin(); it != stacks->end(); it++)
 					{
 						if(*it == stack)
 						{
@@ -81,14 +81,14 @@ void* RAWCServer::handleConnection(void* arg)
 	return NULL;
 }
 
-void RAWCServer::print(char* format, ...)
+void CowServer::print(char* format, ...)
 {
 	char buffer[256];
 	va_list args;
 	va_start(args, format);
 	vsnprintf(buffer, 256, format, args);
 	//printf("Printing to network: %s\n", buffer);
-	for(std::vector<RAWCServer::Stack*>::iterator it = stacks.begin(); it != stacks.end(); it++)
+	for(std::vector<CowServer::Stack*>::iterator it = stacks.begin(); it != stacks.end(); it++)
 	{
 		(*it)->lock();
 		(*it)->queue()->push(buffer);
@@ -97,7 +97,7 @@ void RAWCServer::print(char* format, ...)
 	va_end(args);
 }
 
-void RAWCServer::handle()
+void CowServer::handle()
 {
     struct sockaddr client;
     int s_client = sizeof(client);
@@ -123,31 +123,31 @@ void RAWCServer::handle()
     pthread_create(&thread, NULL, &handleConnection, args);
 }
 
-RAWCServer::Stack::Stack()
+CowServer::Stack::Stack()
 {
 	mutex = new pthread_mutex_t;
 	m_queue = new std::queue<char*>();
 	pthread_mutex_init(mutex, NULL);
 }
 
-RAWCServer::Stack::~Stack()
+CowServer::Stack::~Stack()
 {
 	pthread_mutex_destroy(mutex);
 	delete m_queue;
 	delete mutex;
 }
 
-std::queue<char*>* RAWCServer::Stack::queue()
+std::queue<char*>* CowServer::Stack::queue()
 {
 	return m_queue;
 }
 
-void RAWCServer::Stack::lock()
+void CowServer::Stack::lock()
 {
 	pthread_mutex_lock(mutex);
 }
 
-void RAWCServer::Stack::unlock()
+void CowServer::Stack::unlock()
 {
 	pthread_mutex_unlock(mutex);
 }

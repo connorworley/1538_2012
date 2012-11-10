@@ -1,52 +1,52 @@
 //=============================================================================
-// File: RAWCRobot.cpp
+// File: CowRobot.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(RAWC)
-// All rights reserved.  RAWC proprietary and confidential.
+// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
+// All rights reserved.  Cow proprietary and confidential.
 //             
-// The party receiving this software directly from RAWC (the "Recipient")
+// The party receiving this software directly from Cow (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// RAWC(the "Agreement").  The software may be used in source code form
+// Cow(the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. RAWC retains all ownership rights in and to
+// the Recipient to its users. Cow retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
 //=============================================================================
 
-#include "RAWCRobot.h"
+#include "CowRobot.h"
 #include <math.h>
-#include "RAWCConstants.h"
-#include "RAWCControlBoard.h"
-RAWCRobot* RAWCRobot::singletonInstance = NULL;
+#include "CowConstants.h"
+#include "CowControlBoard.h"
+CowRobot* CowRobot::singletonInstance = NULL;
 #include "CounterBase.h"
-#include "RAWCLib.h"
+#include "CowLib.h"
 
 #define DRIVECODELCDDEBUGER 1
 
-using namespace RAWCLib;
+using namespace CowLib;
 
-/// Creates (if needed) and returns a singleton instance of the RAWCRobot
-RAWCRobot * RAWCRobot::getInstance()
+/// Creates (if needed) and returns a singleton instance of the CowRobot
+CowRobot * CowRobot::getInstance()
 {
 	// If we have not created a robot yet, do so.
 	// If we have created a robot, skip this
 	if (singletonInstance == NULL)
 	{
-		singletonInstance = new RAWCRobot();
+		singletonInstance = new CowRobot();
 	}
 	return singletonInstance;
 }
 
-/// Constructor for RAWCRobot
-RAWCRobot::RAWCRobot()
+/// Constructor for CowRobot
+CowRobot::CowRobot()
 {
 	gyroAngle = 0;
-	//server = new RAWCServer(55555);
+	//server = new CowServer(55555);
 	sd = SmartDashboard::GetInstance();
 	
 	ballsShot = 0;
@@ -56,11 +56,11 @@ RAWCRobot::RAWCRobot()
 	camera = &AxisCamera::GetInstance("10.15.38.11");
 	camera->WriteResolution(AxisCamera::kResolution_640x480);
 	
-	camera->WriteColorLevel((int)RAWCConstants::getInstance()->getValueForKey("cameraColorLevel"));
-	camera->WriteBrightness((int)RAWCConstants::getInstance()->getValueForKey("cameraBrightness"));
-	camera->WriteCompression((int)RAWCConstants::getInstance()->getValueForKey("cameraCompression"));
-	camera->WriteExposurePriority((int)RAWCConstants::getInstance()->getValueForKey("cameraExposurePriority"));
-	camera->WriteMaxFPS((int)RAWCConstants::getInstance()->getValueForKey("cameraMaxFPS"));
+	camera->WriteColorLevel((int)CowConstants::getInstance()->getValueForKey("cameraColorLevel"));
+	camera->WriteBrightness((int)CowConstants::getInstance()->getValueForKey("cameraBrightness"));
+	camera->WriteCompression((int)CowConstants::getInstance()->getValueForKey("cameraCompression"));
+	camera->WriteExposurePriority((int)CowConstants::getInstance()->getValueForKey("cameraExposurePriority"));
+	camera->WriteMaxFPS((int)CowConstants::getInstance()->getValueForKey("cameraMaxFPS"));
 
 
 	threshold = new Threshold(0, 50, 200, 255, 0, 50);
@@ -139,14 +139,14 @@ RAWCRobot::RAWCRobot()
 	setMode(DRIVE_MODE);
 }
 
-int RAWCRobot::getBallCount()
+int CowRobot::getBallCount()
 {
 	return ballsShot;
 }
 
 /// Used to handle the recurring logic funtions inside the robot.
 /// Please call this once per update cycle.
-void RAWCRobot::handle()
+void CowRobot::handle()
 {		
 	printCount++;
 	gyroAngle = gyroFiltered->Calculate(gyro->GetAngle());
@@ -177,9 +177,9 @@ void RAWCRobot::handle()
 	previousChuteIRState = shooter->ballReady();
 	
 	
-	if(RAWCControlBoard::getInstance()->getOperatorButton(3))
+	if(CowControlBoard::getInstance()->getOperatorButton(3))
 	{
-		if(timeSinceLastShot + RAWCConstants::getInstance()->getValueForKey("shooterDelayMS") >= Timer::GetFPGATimestamp())
+		if(timeSinceLastShot + CowConstants::getInstance()->getValueForKey("shooterDelayMS") >= Timer::GetFPGATimestamp())
 		{
 			//printf("Delaying... %f\n", Timer::GetFPGATimestamp());
 			chute->Set(Relay::kOff);
@@ -212,13 +212,13 @@ void RAWCRobot::handle()
 	//SmartDashboard::GetInstance()->PutString("shooterData", (char*)&c);
 }
 
-void RAWCRobot::cameraReset()
+void CowRobot::cameraReset()
 {
 	cameraGetNewImage = true;
 	cameraInitialAngle = gyroAngle;
 }
 
-bool RAWCRobot::cameraPID(float y)
+bool CowRobot::cameraPID(float y)
 {
 	if(cameraGetNewImage)
 	{
@@ -254,7 +254,7 @@ bool RAWCRobot::cameraPID(float y)
 			vector<ParticleAnalysisReport> *sortedReports = convexHullImage->GetOrderedParticleAnalysisReports(); // get the results
 			
 			bool foundTwoTargets = false;
-			RAWCLib::QSortParticleAnalysisReport(sortedReports->begin(), sortedReports->end());
+			CowLib::QSortParticleAnalysisReport(sortedReports->begin(), sortedReports->end());
 			
 			double xWanted = 0;
 			for(unsigned int i = 1; i < sortedReports->size(); i++)
@@ -282,7 +282,7 @@ bool RAWCRobot::cameraPID(float y)
 			if(foundTwoTargets)
 			{
 				cameraP = 23.5 * (xWanted);
-				//PID_P = RAWCLib::LimitMix(PID_P*1.35, 0.4);
+				//PID_P = CowLib::LimitMix(PID_P*1.35, 0.4);
 				
 				//this->driveSpeedTurn(y, -PID_P, true);
 				printf("Using two targets: %f\n", cameraP);
@@ -296,7 +296,7 @@ bool RAWCRobot::cameraPID(float y)
 					ParticleAnalysisReport *r0 = &(sortedReports->at(sortedReports->size() - 1));
 					cameraP = (23.5 * r0->center_mass_x_normalized);
 				
-//				PID_P = RAWCLib::LimitMix(PID_P*0.6, 0.4);
+//				PID_P = CowLib::LimitMix(PID_P*0.6, 0.4);
 				//this->driveSpeedTurn(y, -PID_P, true);
 				printf("Using one targets %f\n", cameraP);
 				}
@@ -321,13 +321,13 @@ bool RAWCRobot::cameraPID(float y)
 /// @param leftDriveValue
 /// @param rightDriveValue
 ///
-void RAWCRobot::driveLeftRight(float leftDriveValue, float rightDriveValue)
+void CowRobot::driveLeftRight(float leftDriveValue, float rightDriveValue)
 {
 	wantedLeftDrive = leftDriveValue;
 	wantedRightDrive = rightDriveValue;
 }
 
-void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
+void CowRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 {
 	//Linear degredation of steeering based off of velocity
 	//	velocity *= 0.003;
@@ -348,16 +348,16 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 	unscaled_turn = turn;
 	
 	
-	double nonlinearity_wheel = RAWCConstants::getInstance()->getValueForKey("wheelNonLineararity");
+	double nonlinearity_wheel = CowConstants::getInstance()->getValueForKey("wheelNonLineararity");
 	turn = sin(3.14 / 2.0 * nonlinearity_wheel * turn) / sin(3.14 / 2.0 * nonlinearity_wheel);
 	turn = sin(3.14 / 2.0 * nonlinearity_wheel * turn) / sin(3.14 / 2.0 * nonlinearity_wheel);
 	//turn = turn * (temp_vel - 0.75);
 
 
 	if (quickTurn)
-		sensitivity = RAWCConstants::getInstance()->getValueForKey("sensitivityQuickturn");
+		sensitivity = CowConstants::getInstance()->getValueForKey("sensitivityQuickturn");
 	else
-		sensitivity = RAWCConstants::getInstance()->getValueForKey("sensitivityWithoutQuickturn");
+		sensitivity = CowConstants::getInstance()->getValueForKey("sensitivityWithoutQuickturn");
 
 	turn *= sensitivity;
 	turn = -turn;
@@ -366,7 +366,7 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 	
 	if(!quickTurn)
 	{
-		turn = turn + (speed * RAWCConstants::getInstance()->getValueForKey("speedScaling"));
+		turn = turn + (speed * CowConstants::getInstance()->getValueForKey("speedScaling"));
 	}
 	
 	static int counter = 0;
@@ -386,7 +386,7 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 //		
 //		double P = shooterGyroSetPoint - PV;
 //		
-//		turn = P * RAWCConstants::getInstance()->getValueForKey("shooterDriveP");;
+//		turn = P * CowConstants::getInstance()->getValueForKey("shooterDriveP");;
 //		
 //		if(counter % 10 == 0)
 //			printf("SP: %f, PV: %f, P: %f\n", shooterGyroSetPoint, PV, P);
@@ -408,7 +408,7 @@ void RAWCRobot::driveSpeedTurn(float speed, float turn, bool quickTurn)
 /// Allows robot to spin in place
 /// @param turnRate
 ///
-void RAWCRobot::quickTurn(float turnRate)
+void CowRobot::quickTurn(float turnRate)
 {
 	//when provided with + turn, quick turn right
 
@@ -419,7 +419,7 @@ void RAWCRobot::quickTurn(float turnRate)
 }
 
 /// Handles the autmatic turn on/off of the compressor
-void RAWCRobot::compressorHandle()
+void CowRobot::compressorHandle()
 {
 	if (!compressorSignal->Get())
 	{
@@ -430,50 +430,50 @@ void RAWCRobot::compressorHandle()
 }
 
 /// Returns the value of the drive's left side encoder
-Encoder * RAWCRobot::getLeftEncoder()
+Encoder * CowRobot::getLeftEncoder()
 {
 	return leftDriveEncoder;
 }
 
 /// Returns the value of the drive's right side encoder
-Encoder * RAWCRobot::getRightEncoder()
+Encoder * CowRobot::getRightEncoder()
 {
 	return rightDriveEncoder;
 }
 
-Gyro * RAWCRobot::getGyro()
+Gyro * CowRobot::getGyro()
 {
 	return gyro;
 }
 
-Shooter* RAWCRobot::getShooter()
+Shooter* CowRobot::getShooter()
 {
 	return shooter;
 }
 
-Roller* RAWCRobot::getIntake()
+Roller* CowRobot::getIntake()
 {
 	return intake;
 }
 
-Roller* RAWCRobot::getChute()
+Roller* CowRobot::getChute()
 {
 	return chute;
 }
 
-Solenoid* RAWCRobot::getFunnel()
+Solenoid* CowRobot::getFunnel()
 {
 	return funnel;
 }
 
-Solenoid* RAWCRobot::getRampManip()
+Solenoid* CowRobot::getRampManip()
 {
 	return rampManip;
 }
 
 /// Shifts drive gears. 
 /// @param shifterPosition
-void RAWCRobot::shift(ShifterPositions shifterPosition)
+void CowRobot::shift(ShifterPositions shifterPosition)
 {
 	bool solA = false, solB = false;
 	ShifterStates nextShiftState = currentShiftState;
@@ -515,19 +515,19 @@ void RAWCRobot::shift(ShifterPositions shifterPosition)
 	currentShiftState = nextShiftState;
 }
 
-void RAWCRobot::askForShift(ShifterPositions shifterPosition)
+void CowRobot::askForShift(ShifterPositions shifterPosition)
 {
 	wantedShifterPosition = shifterPosition;
 }
 
 /// Sets the robot mode
-void RAWCRobot::setMode(RobotModes newMode)
+void CowRobot::setMode(RobotModes newMode)
 {
 	mode = newMode;
 }
 
 /// sets the left side motors
-void RAWCRobot::setLeftMotors(float val)
+void CowRobot::setLeftMotors(float val)
 {
 	val = -1.0 * val;
 
@@ -542,7 +542,7 @@ void RAWCRobot::setLeftMotors(float val)
 }
 
 /// sets the left side motors
-void RAWCRobot::setRightMotors(float val)
+void CowRobot::setRightMotors(float val)
 {
 	if (val > 1.0)
 		val = 1.00;
@@ -554,12 +554,12 @@ void RAWCRobot::setRightMotors(float val)
 	rightDriveC->Set(-val);
 }
 
-bool RAWCRobot::inHighGear()
+bool CowRobot::inHighGear()
 {
 	return (currentShiftState == SHIFTER_STATE_HIGH);
 }
 
-RAWCServer* RAWCRobot::getServer()
+CowServer* CowRobot::getServer()
 {
 	return server;
 }

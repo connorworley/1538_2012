@@ -1,31 +1,31 @@
 //=============================================================================
-// File: RAWCBase.cpp
+// File: CowBase.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(RAWC)
-// All rights reserved.  RAWC proprietary and confidential.
+// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
+// All rights reserved.  Cow proprietary and confidential.
 //             
-// The party receiving this software directly from RAWC (the "Recipient")
+// The party receiving this software directly from Cow (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// RAWC(the "Agreement").  The software may be used in source code form
+// Cow(the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. RAWC retains all ownership rights in and to
+// the Recipient to its users. Cow retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
 //=============================================================================
 
 #include "WPILib.h"
-#include "RAWCRobot.h"
+#include "CowRobot.h"
 #include "DashboardDataFormat.h"
 #include "Vision/AxisCamera.h"
 #include "Controllers/OperatorController.h"
 #include "Controllers/AutoModeController.h"
 #include "Autonomous/AutoModeSelector.h"
-#include "RAWCConstants.h"
+#include "CowConstants.h"
 
 static bool wroteOnce = false;
 
@@ -39,19 +39,19 @@ time_t constantsLastModified;
 
 DriverStationLCD *m_dsLCD;
 
-class RAWCBase : public IterativeRobot
+class CowBase : public IterativeRobot
 {
 	DriverStation *m_ds;
-	RAWCRobot *bot;
+	CowRobot *bot;
 	OperatorController * opController;
 	AutoModeController * autoController;
 	AutoModeSelector * autoSelector;
 	int autoIndex;
-	RAWCConstants * constants;
+	CowConstants * constants;
 	Timer* fieldTime;
 	
 public:
-	RAWCBase(void)	{
+	CowBase(void)	{
 		taskDeleteHookAdd((FUNCPTR)&taskDeleteHook);
 		
 		struct stat data;
@@ -61,7 +61,7 @@ public:
 		fieldTime = new Timer();
 		SetPeriod((1.0/200.0));
 
-		constants = RAWCConstants::getInstance();
+		constants = CowConstants::getInstance();
 		constants->restoreData();
 		
 		constants->insertKeyAndValue("shooterDelayMS", 1);
@@ -105,7 +105,7 @@ public:
 		GetWatchdog().SetEnabled(false);
 	
 		m_dsLCD = DriverStationLCD::GetInstance();
-		bot = RAWCRobot::getInstance();	
+		bot = CowRobot::getInstance();	
 		opController = new OperatorController();
 		autoController = AutoModeController::getInstance();
 		autoSelector = new AutoModeSelector();
@@ -137,8 +137,8 @@ public:
 		constants->restoreData();
 		autoController->reset();
 		autoSelector->writeToAutoModeController(autoController);
-		RAWCRobot::getInstance()->getLeftEncoder()->Reset();
-		RAWCRobot::getInstance()->getGyro()->Reset();
+		CowRobot::getInstance()->getLeftEncoder()->Reset();
+		CowRobot::getInstance()->getGyro()->Reset();
 		
 		
 	}
@@ -241,7 +241,7 @@ public:
 			if(data.st_mtime != constantsLastModified)
 			{
 				printf("Constants file modified.  Reloading data.\n");
-				RAWCConstants::getInstance()->restoreData();
+				CowConstants::getInstance()->restoreData();
 				constantsLastModified = data.st_mtime;
 			}
 		}
@@ -250,4 +250,4 @@ public:
 	}
 };
 
-START_ROBOT_CLASS(RAWCBase);
+START_ROBOT_CLASS(CowBase);

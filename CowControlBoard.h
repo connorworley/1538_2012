@@ -1,27 +1,27 @@
-#ifndef _RAWC_CONTROL_BOARD_H
-#define _RAWC_CONTROL_BOARD_H
+#ifndef _Cow_CONTROL_BOARD_H
+#define _Cow_CONTROL_BOARD_H
 //=============================================================================
-// File: RAWCControlBoard.h
+// File: CowControlBoard.h
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(RAWC)
-// All rights reserved.  RAWC proprietary and confidential.
+// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
+// All rights reserved.  Cow proprietary and confidential.
 //             
-// The party receiving this software directly from RAWC (the "Recipient")
+// The party receiving this software directly from Cow (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// RAWC(the "Agreement").  The software may be used in source code form
+// Cow(the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. RAWC retains all ownership rights in and to
+// the Recipient to its users. Cow retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
 //=============================================================================
 
 #include "WPILib.h"
-#include "RAWCRobot.h"
+#include "CowRobot.h"
 
 #define SHIFTER_BUTTON			4
 #define AUTON_BUTTON			1
@@ -35,13 +35,13 @@
 
 #define FAST_TURN				6 
 
-/// This class offers access to the 2010 specific RAWC Control Board
+/// This class offers access to the 2010 specific Cow Control Board
 ///
-class RAWCControlBoard
+class CowControlBoard
 {
 private:
 	DriverStationEnhancedIO * ds;
-	static RAWCControlBoard *singletonInstance;
+	static CowControlBoard *singletonInstance;
 	bool autoLatch;
 	bool alignLatch;
 	bool rampLatch;
@@ -52,7 +52,7 @@ private:
 	Joystick* operatorPanel;
 	
 	// Construction
-	RAWCControlBoard();
+	CowControlBoard();
 	
 public:
 	enum DistanceLEDs{
@@ -63,7 +63,7 @@ public:
 		LED_DISTANCE_ALL
 	};
 	
-	static RAWCControlBoard* getInstance();
+	static CowControlBoard* getInstance();
 	bool getQuickTurn();
 	bool getButtonShifter();
 	bool getButtonAutoSelect();
