@@ -240,7 +240,7 @@
         </mapAttribute>
     </attributes>
     <buildtargets>
-        <buildtarget buildtool="Linker" name="RAWCBot2012" passed="false" targetname="RAWCBot2012">
+        <buildtarget buildtool="Linker" name="CowBot2012" passed="false" targetname="CowBot2012">
             <contents>
                 <folder name="/1538_2012" recursive="true"/>
             </contents>
